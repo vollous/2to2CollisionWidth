@@ -362,14 +362,14 @@ int main() {
   const int NDIM = 6;
   const int NCOMP = 1;
   const int NVEC = 1;
-  const double EPSREL = 1e-6;
+  const double EPSREL = 5e-2;
   const double EPSABS = 1e-12;
   const int VERBOSE = 3;
   const int LAST = 0;
   const int SEED = 0;
   const int MINEVAL = 0;
-  const int MAXEVAL = 100000;
-  const int NSTART = 10000;
+  const int MAXEVAL = 200000;
+  const int NSTART = 1000;
   const int NINCREASE = 1000;
   const int NBATCH = 1000;
   const int GRIDNO = 0;
@@ -388,5 +388,6 @@ int main() {
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
+  std::cout << "\n\nGamma_y = \t" << integral[0] * 12 / pow(T, 3) << "\n";
   return 0;
 }
