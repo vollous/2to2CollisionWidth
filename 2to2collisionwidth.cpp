@@ -181,8 +181,8 @@ double Process::integrand_theta_phi(const double &theta, const double &phi) {
   const double t =
       pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + p1_ * p3;
 
-  return AmplitudeSquared(s_, t) * Distribution(m3, p3, s3) *
-         Distribution(m4, p4, s4) * r * r * sin(phi) /
+  return AmplitudeSquared(s_, t) * (1 - Distribution(m3, p3, s3)) *
+         (1 + Distribution(m4, p4, s4)) * r * r * sin(phi) /
          (delta_r * 4 * Energy(m3, p3) * Energy(m4, p4));
 }
 
