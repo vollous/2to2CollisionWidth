@@ -315,7 +315,7 @@ static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
     return 0;
   }
 
-  const double scalling = 100.; // Put the hypercube on the region of interest.
+  const double scalling = 100; // Put the hypercube on the region of interest.
 
   // Spherical coordinates p1
   const double r1 = scalling * xx[0] / (1 - xx[0]);
@@ -336,9 +336,9 @@ static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
   // std::cout << "p1 >\t" << p1[0] << "\t" << p1[1] << "\t" << p1[2] << "\t";
   // std::cout << "p2 >\t" << p2[0] << "\t" << p2[1] << "\t" << p2[2] << "\t";
 
-  ff[0] = proc->MonteCarloInt(p1, p2) * _4_M_4 * pow(r1, 2) * (pow(r1 + 1, 2)) *
-          sin(phi1) * pow(r2, 2) * sin(phi2) * (pow(r2 + 1, 2)) /
-          (scalling * scalling);
+  ff[0] = proc->MonteCarloInt(p1, p2) * _4_M_4 * pow(r1, 2) *
+          pow(r1 + scalling, 2) * sin(phi1) * pow(r2, 2) * sin(phi2) *
+          pow(r2 + scalling, 2) / (scalling * scalling);
 
   // std::cout << "r >\t" << ff[0] << "\n";
   return 0;
