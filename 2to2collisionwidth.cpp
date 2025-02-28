@@ -361,7 +361,7 @@ int main() {
 
   const int NDIM = 6;
   const int NCOMP = 1;
-  const int NVEC = 20;
+  const int NVEC = 1;
   const double EPSREL = 1e-6;
   const double EPSABS = 1e-12;
   const int VERBOSE = 3;
