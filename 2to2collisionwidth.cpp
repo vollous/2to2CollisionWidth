@@ -359,7 +359,7 @@ int main() {
 
   tLgTOtRH proc(T, s1, s2, s3, s4, m1, m2, m3, m4);
 
-  const int NDIM = 3;
+  const int NDIM = 6;
   const int NCOMP = 1;
   const int NVEC = 20;
   const double EPSREL = 1e-6;
