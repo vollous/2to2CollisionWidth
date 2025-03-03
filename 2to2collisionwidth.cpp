@@ -224,82 +224,12 @@ struct tLgTOtRH : Process {
     const double sw = 0.472;
     const double mw = 80;
 
-    return (2 * pow(e, 2) * pow(gs, 2) * pow(m1, 2) *
-            (-(pow(m1, 6) *
-               (pow(m2, 4) + pow(m2, 2) * (-3 * pow(m3, 2) +
-                                           17 * (2 * pow(m1, 2) + pow(m2, 2) +
-                                                 pow(m3, 2) - s - t)))) +
-             pow(m1, 4) *
-                 (pow(m2, 4) *
-                      (2 * pow(m3, 2) + s -
-                       4 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) +
-                       4 * t) +
-                  pow(m2, 2) *
-
-                      (-3 * pow(m3, 4) +
-                       pow(m3, 2) * (-9 * pow(m3, 2) +
-                                     4 * (2 * pow(m1, 2) + pow(m2, 2) +
-                                          pow(m3, 2) - s - t) -
-                                     6 * t) +
-                       pow(m3, 2) * (10 * (2 * pow(m1, 2) + pow(m2, 2) +
-                                           pow(m3, 2) - s - t) +
-                                     t) +
-                       (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) *
-                           (2 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s -
-                                 t) +
-                            31 * t))) +
-             t * (-(pow(m2, 4) * s * (2 * pow(m3, 2) - 3 * t)) -
-                  pow(m2, 2) *
-                      (pow(m3, 6) + pow(m3, 4) * t -
-                       pow(m3, 2) *
-                           (2 * t *
-                                (3 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) -
-                                      s - t) +
-                                 t) +
-                            pow(m3, 2) * (-2 * pow(m1, 2) - pow(m2, 2) -
-                                          pow(m3, 2) + s + 2 * t)) +
-                       (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s) *
-                           (pow(m3, 2) * (-2 * pow(m1, 2) - pow(m2, 2) -
-                                          pow(m3, 2) + s + 2 * t) +
-                            (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) *
-                                (-2 * pow(m1, 2) - pow(m2, 2) - pow(m3, 2) + s +
-                                 4 * t)))) +
-             pow(m1, 2) *
-                 (pow(m2, 4) *
-                      (4 * s *
-                           (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) -
-                       4 * s * t - 3 * pow(t, 2) + pow(m3, 2) * (-3 * s + t) +
-                       pow(m3, 2) * (s + t)) +
-                  pow(m2, 2) *
-                      (5 * pow(m3, 6) -
-                       4 * pow(m3, 4) *
-                           (2 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s -
-                                 t) +
-                            3 * t) +
-                       pow(m3, 2) * (-pow(2 * pow(m1, 2) + pow(m2, 2) +
-                                              pow(m3, 2) - s - t,
-                                          2) -
-                                     10 *
-                                         (2 * pow(m1, 2) + pow(m2, 2) +
-                                          pow(m3, 2) - s - t) *
-                                         t +
-                                     pow(t, 2)) -
-                       (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) *
-                           (pow(2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s -
-                                    t,
-                                2) +
-                            16 *
-                                (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s -
-                                 t) *
-                                t +
-                            11 * pow(t, 2)) +
-                       pow(m3, 2) *
-                           (pow(m3, 2) * (2 * pow(m1, 2) + pow(m2, 2) +
-                                          pow(m3, 2) - s + 7 * t) +
-                            2 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) - s - t) *
-                                (2 * (2 * pow(m1, 2) + pow(m2, 2) + pow(m3, 2) -
-                                      s - t) +
-                                 11 * t)))))) /
+    return (pow(e, 2) * pow(gs, 2) * pow(m1, 4) *
+            pow(-2 * pow(m1, 2) - pow(m2, 2) + s + t, 2) *
+            (-pow(m1, 4) - pow(m2, 4) +
+             pow(m2, 2) * (pow(m3, 2) - 2 * (2 * pow(m1, 2) + pow(m2, 2) +
+                                             pow(m3, 2) - s - t)) -
+             s * t + pow(m1, 2) * (2 * pow(m2, 2) + s + t))) /
            (pow(m2, 2) * pow(mw, 2) * pow(-pow(m1, 2) + s, 2) * pow(sw, 2) *
             pow(-pow(m1, 2) + t, 2));
   }
