@@ -309,6 +309,8 @@ int main() {
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
 
+  auto start = std::chrono::system_clock::now();
+
   Vegas(NDIM, NCOMP, Integrand, &proc, NVEC, EPSREL, EPSABS, VERBOSE, SEED,
         MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, GRIDNO, STATEFILE, &SPIN,
         &neval, &fail, integral, error, prob);
@@ -318,6 +320,15 @@ int main() {
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  std::cout << "\n\nGamma_y = \t" << integral[0] * 12 / pow(T, 3) << "\n";
+  std::cout << "\n\nGamma_y = \t" << integral[0] * 12. / pow(T, 3) << "\n\n";
+
+  // Your Code to Execute //
+  auto end = std::chrono::system_clock::now();
+  std::cout << "It took\t"
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                     start)
+                       .count() /
+                   1000.
+            << "\ts" << std::endl;
   return 0;
 }

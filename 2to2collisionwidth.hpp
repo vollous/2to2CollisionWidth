@@ -4,6 +4,7 @@
 #define TWOTOTWOCOLLISIONWIDTH_HPP
 
 #include <assert.h>
+#include <chrono>
 #include <cmath>
 #include <cuba.h>
 #include <functional>
