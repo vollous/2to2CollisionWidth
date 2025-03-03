@@ -245,7 +245,7 @@ static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
     return 0;
   }
 
-  const double scalling = 100; // Put the hypercube on the region of interest.
+  const double scalling = 100.; // Put the hypercube on the region of interest.
 
   // Spherical coordinates p1
   const double r1 = scalling * xx[0] / (1 - xx[0]);
