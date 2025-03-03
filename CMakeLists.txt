@@ -8,6 +8,9 @@ project(
     "2 -> 2 Collision Widths"
 )
 
+add_compile_options(-Ofast)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast" )
 
 include_directories(/opt/homebrew/include)
 find_library(CUBA_LIB NAMES cuba PATHS /opt/homebrew/lib)
