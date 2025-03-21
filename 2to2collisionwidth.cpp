@@ -12,7 +12,7 @@ double Process::integrate_phi(const double &theta) {
   const gsl_function *F = static_cast<gsl_function *>(&Fp);
 
   double result, error;
-  gsl_integration_qag(F, 0, M_PI, 1e-7, 1e-7, 1000, GSL_INTEG_GAUSS15, w,
+  gsl_integration_qag(F, 0, M_PI, 1e-5, 1e-5, 1000, GSL_INTEG_GAUSS15, w,
                       &result, &error);
   gsl_integration_workspace_free(w);
   return result;
@@ -40,7 +40,7 @@ double Process::Integrate(const double &E1, const double &ET, const double &s,
   F.params = this;
 
   double result, error;
-  gsl_integration_qag(&F, 0, 2 * M_PI, 1e-7, 1e-7, 1000, GSL_INTEG_GAUSS15, w,
+  gsl_integration_qag(&F, 0, 2 * M_PI, 1e-5, 1e-5, 1000, GSL_INTEG_GAUSS15, w,
                       &result, &error);
   gsl_integration_workspace_free(w);
   return result;
@@ -215,29 +215,9 @@ Process::Process(const double &T_in, const int &s1_in, const int &s2_in,
     : s1(s1_in), s2(s2_in), s3(s3_in), s4(s4_in), T(T_in), m1(m1_in), m2(m2_in),
       m3(m3_in), m4(m4_in) {};
 
-struct tLgTOtRH : Process {
-  using Process::Process; // Import constructor
-
-  double AmplitudeSquared(const double &s, const double &t) override {
-    const double e = 0.31;
-    const double gs = 1.;
-    const double sw = 0.472;
-    const double mw = 80;
-
-    return (pow(e, 2) * pow(gs, 2) * pow(m1, 4) *
-            pow(-2 * pow(m1, 2) - pow(m2, 2) + s + t, 2) *
-            (-pow(m1, 4) - pow(m2, 4) +
-             pow(m2, 2) * (pow(m3, 2) - 2 * (2 * pow(m1, 2) + pow(m2, 2) +
-                                             pow(m3, 2) - s - t)) -
-             s * t + pow(m1, 2) * (2 * pow(m2, 2) + s + t))) /
-           (pow(m2, 2) * pow(mw, 2) * pow(-pow(m1, 2) + s, 2) * pow(sw, 2) *
-            pow(-pow(m1, 2) + t, 2));
-  }
-};
-
-static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
-                     cubareal ff[], void *userdata) {
-  auto proc = static_cast<tLgTOtRH *>(userdata);
+int Process::Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
+                       cubareal ff[], void *userdata) {
+  auto proc = static_cast<Process *>(userdata);
 
   if (xx[0] == 1 or xx[3] == 1) {
     // TODO might be removable
@@ -245,7 +225,7 @@ static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
     return 0;
   }
 
-  const double scalling = 100.; // Put the hypercube on the region of interest.
+  const double scalling = 1; // Put the hypercube on the region of interest.
 
   // Spherical coordinates p1
   const double r1 = scalling * xx[0] / (1 - xx[0]);
@@ -262,73 +242,10 @@ static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
   const std::vector<double> p2 =
       r2 * (std::vector<double>){cos(theta2) * sin(phi2),
                                  sin(theta2) * sin(phi2), cos(phi2)};
-  // Return result
-  // std::cout << "p1 >\t" << p1[0] << "\t" << p1[1] << "\t" << p1[2] << "\t";
-  // std::cout << "p2 >\t" << p2[0] << "\t" << p2[1] << "\t" << p2[2] << "\t";
 
   ff[0] = proc->MonteCarloInt(p1, p2) * _4_M_4 * pow(r1, 2) *
           pow(r1 + scalling, 2) * sin(phi1) * pow(r2, 2) * sin(phi2) *
           pow(r2 + scalling, 2) / (scalling * scalling);
 
-  // std::cout << "r >\t" << ff[0] << "\n";
   return 0;
 };
-
-int main() {
-  double T = 100.;
-
-  int s1 = 1;
-  int s2 = -1;
-  int s3 = 1;
-  int s4 = -1;
-
-  double m1 = 170;
-  double m2 = 10;
-  double m3 = 170;
-  double m4 = 100;
-
-  tLgTOtRH proc(T, s1, s2, s3, s4, m1, m2, m3, m4);
-
-  const int NDIM = 6;
-  const int NCOMP = 1;
-  const int NVEC = 1;
-  const double EPSREL = 5e-2;
-  const double EPSABS = 1e-12;
-  const int VERBOSE = 3;
-  const int LAST = 0;
-  const int SEED = 0;
-  const int MINEVAL = 0;
-  const int MAXEVAL = 200000;
-  const int NSTART = 1000;
-  const int NINCREASE = 1000;
-  const int NBATCH = 1000;
-  const int GRIDNO = 0;
-  const char *STATEFILE = NULL;
-  const int *SPIN = NULL;
-
-  int comp, nregions, neval, fail;
-  cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
-
-  auto start = std::chrono::system_clock::now();
-
-  Vegas(NDIM, NCOMP, Integrand, &proc, NVEC, EPSREL, EPSABS, VERBOSE, SEED,
-        MINEVAL, MAXEVAL, NSTART, NINCREASE, NBATCH, GRIDNO, STATEFILE, &SPIN,
-        &neval, &fail, integral, error, prob);
-
-  std::cout << "Integral\t" << integral[0] << "\n";
-  std::cout << "Error \t" << error[0] << "\n";
-  std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
-  std::cout << "prob\t" << prob[0] << "\n";
-
-  std::cout << "\n\nGamma_y = \t" << integral[0] * 12. / pow(T, 3) << "\n\n";
-
-  // Your Code to Execute //
-  auto end = std::chrono::system_clock::now();
-  std::cout << "It took\t"
-            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
-                                                                     start)
-                       .count() /
-                   1000.
-            << "\ts" << std::endl;
-  return 0;
-}

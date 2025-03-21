@@ -3,6 +3,23 @@
 #ifndef TWOTOTWOCOLLISIONWIDTH_HPP
 #define TWOTOTWOCOLLISIONWIDTH_HPP
 
+extern const int NDIM;
+extern const int NCOMP;
+extern const int NVEC;
+extern const double EPSREL;
+extern const double EPSABS;
+extern const int VERBOSE;
+extern const int LAST;
+extern const int SEED;
+extern const int MINEVAL;
+extern const int MAXEVAL;
+extern const int NSTART;
+extern const int NINCREASE;
+extern const int NBATCH;
+extern const int GRIDNO;
+extern const char *STATEFILE;
+extern const int *SPIN;
+
 #include <assert.h>
 #include <chrono>
 #include <cmath>
@@ -165,6 +182,9 @@ struct Process {
    * @return double
    */
   double integrand_theta_phi(const double &theta, const double &phi);
+
+  static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
+                       cubareal ff[], void *userdata);
 
   /**
    * @brief Integrates over phi for a given theta
