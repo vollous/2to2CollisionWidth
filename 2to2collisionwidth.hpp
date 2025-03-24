@@ -29,6 +29,7 @@ extern const int *SPIN;
 #include <iostream>
 #include <numeric>
 #include <string>
+#include <algorithm>
 
 #define _4_M_4 4 * M_PI *M_PI *M_PI *M_PI /* 4 pi^4 */
 
