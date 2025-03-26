@@ -20,32 +20,38 @@ extern const int GRIDNO;
 extern const char *STATEFILE;
 extern const int *SPIN;
 
+#include <algorithm>
 #include <assert.h>
 #include <chrono>
 #include <cmath>
 #include <cuba.h>
 #include <functional>
+#include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
 #include <iostream>
 #include <numeric>
 #include <string>
-#include <algorithm>
 
-constexpr double _4_M_4 =  4 * M_PI * M_PI * M_PI * M_PI; /* 4 pi^4 */
+constexpr double _4_M_4        = 4 * M_PI * M_PI * M_PI * M_PI; /* 4 pi^4 */
 constexpr double _2_PI_FACTORS = 1 * pow(2 * M_PI, 4) / pow(2 * M_PI, 3 * 4);
 
-namespace TwoToTwoCollisionWidth {
+namespace TwoToTwoCollisionWidth
+{
 
 /**
  * @brief vector addition
  */
 template <typename T>
-std::vector<T> operator+(const std::vector<T> &a, const std::vector<T> &b) {
+std::vector<T> operator+(const std::vector<T> &a, const std::vector<T> &b)
+{
   assert(a.size() == b.size());
   std::vector<T> result;
   result.reserve(a.size());
 
-  std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result),
+  std::transform(a.begin(),
+                 a.end(),
+                 b.begin(),
+                 std::back_inserter(result),
                  std::plus<T>());
   return result;
 }
@@ -54,13 +60,17 @@ std::vector<T> operator+(const std::vector<T> &a, const std::vector<T> &b) {
  * @brief vector subtraction
  */
 template <typename T>
-std::vector<T> operator-(const std::vector<T> &a, const std::vector<T> &b) {
+std::vector<T> operator-(const std::vector<T> &a, const std::vector<T> &b)
+{
   assert(a.size() == b.size());
 
   std::vector<T> result;
   result.reserve(a.size());
 
-  std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result),
+  std::transform(a.begin(),
+                 a.end(),
+                 b.begin(),
+                 std::back_inserter(result),
                  std::minus<T>());
   return result;
 }
@@ -69,11 +79,14 @@ std::vector<T> operator-(const std::vector<T> &a, const std::vector<T> &b) {
  * @brief multiplication of vector with scalar
  */
 template <typename T, typename T2>
-std::vector<T> operator*(const T2 &a, const std::vector<T> &b) {
+std::vector<T> operator*(const T2 &a, const std::vector<T> &b)
+{
   std::vector<T> result;
   result.reserve(b.size());
 
-  std::transform(b.begin(), b.end(), std::back_inserter(result),
+  std::transform(b.begin(),
+                 b.end(),
+                 std::back_inserter(result),
                  [&a](T i) { return a * i; });
   return result;
 }
@@ -82,11 +95,14 @@ std::vector<T> operator*(const T2 &a, const std::vector<T> &b) {
  * @brief division of vector by scalar
  */
 template <typename T, typename T2>
-std::vector<T> operator/(const std::vector<T> &a, const T2 &b) {
+std::vector<T> operator/(const std::vector<T> &a, const T2 &b)
+{
   std::vector<T> result;
   result.reserve(a.size());
 
-  std::transform(a.begin(), a.end(), std::back_inserter(result),
+  std::transform(a.begin(),
+                 a.end(),
+                 std::back_inserter(result),
                  [&b](T i) { return i / b; });
   return result;
 }
@@ -95,13 +111,17 @@ std::vector<T> operator/(const std::vector<T> &a, const T2 &b) {
  * @brief dot product of two vectors
  */
 template <typename T>
-T operator*(const std::vector<T> &a, const std::vector<T> &b) {
+T operator*(const std::vector<T> &a, const std::vector<T> &b)
+{
   assert(a.size() == b.size());
 
   std::vector<T> result;
   result.reserve(a.size());
 
-  std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result),
+  std::transform(a.begin(),
+                 a.end(),
+                 b.begin(),
+                 std::back_inserter(result),
                  [](T i, T j) { return (i * j); });
 
   T result1 = std::accumulate(result.begin(), result.end(), 0.0);
@@ -109,21 +129,25 @@ T operator*(const std::vector<T> &a, const std::vector<T> &b) {
   return result1;
 }
 
-template <typename F> class gsl_function_pp : public gsl_function {
+template <typename F> class gsl_function_pp : public gsl_function
+{
 public:
-  gsl_function_pp(const F &func) : _func(func) {
+  gsl_function_pp(const F &func) : _func(func)
+  {
     function = &gsl_function_pp::invoke;
-    params = this;
+    params   = this;
   }
 
 private:
   const F &_func;
-  static double invoke(double x, void *params) {
+  static double invoke(double x, void *params)
+  {
     return static_cast<gsl_function_pp *>(params)->_func(x);
   }
 };
 
-struct Process {
+struct Process
+{
 
   std::vector<double> p1p2_;
   std::vector<double> p1_;
@@ -148,8 +172,8 @@ struct Process {
    * @param s -1 for boson, 1 for fermion
    * @return double
    */
-  double Distribution(const double &m, const std::vector<double> &p,
-                      const int &s);
+  double
+  Distribution(const double &m, const std::vector<double> &p, const int &s);
 
   /**
    * @brief Calculate r for a given rcoeff and shift. theta and phi are not used
@@ -162,8 +186,12 @@ struct Process {
    * @param phi angle with the z acis
    * @param rcoeff (p1 + p2) . director( p4 )
    */
-  void calculate_r(double &r, double &delta_r, double shift, double theta,
-                   double phi, const double &rcoeff);
+  void calculate_r(double &r,
+                   double &delta_r,
+                   double shift,
+                   double theta,
+                   double phi,
+                   const double &rcoeff);
 
   /**
    * @brief Integrates over the outgoing momentum for a given p1 and p2.
@@ -185,8 +213,11 @@ struct Process {
    */
   double integrand_theta_phi(const double &theta, const double &phi);
 
-  static int Integrand(const int *ndim, const cubareal xx[], const int *ncomp,
-                       cubareal ff[], void *userdata);
+  static int Integrand(const int *ndim,
+                       const cubareal xx[],
+                       const int *ncomp,
+                       cubareal ff[],
+                       void *userdata);
 
   /**
    * @brief Integrates over phi for a given theta
@@ -206,7 +237,9 @@ struct Process {
    * @param p1p2 p1p2 = p1 + p2
    * @return double
    */
-  double Integrate(const double &E1, const double &ET, const double &s,
+  double Integrate(const double &E1,
+                   const double &ET,
+                   const double &s,
                    const std::vector<double> &p1,
                    const std::vector<double> &p1p2);
 
@@ -223,9 +256,14 @@ struct Process {
    * @param m3_in mass of particle 3
    * @param m4_in mass of particle 4
    */
-  explicit Process(const double &T_in, const int &s1_in, const int &s2_in,
-                   const int &s3_in, const int &s4_in, const double &m1_in,
-                   const double &m2_in, const double &m3_in,
+  explicit Process(const double &T_in,
+                   const int &s1_in,
+                   const int &s2_in,
+                   const int &s3_in,
+                   const int &s4_in,
+                   const double &m1_in,
+                   const double &m2_in,
+                   const double &m3_in,
                    const double &m4_in);
 
   /**
