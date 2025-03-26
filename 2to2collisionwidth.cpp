@@ -204,7 +204,7 @@ double Process::MonteCarloInt(const std::vector<double> p1,
 
   // Normalization
   integral *=
-      Distribution(m1, p1, s1) * Distribution(m2, p2, s2) / (4 * E1 * E2);
+      _2_PI_FACTORS * Distribution(m1, p1, s1) * Distribution(m2, p2, s2) / (4 * E1 * E2);
 
   return integral;
 };
