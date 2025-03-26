@@ -107,7 +107,7 @@ int main() {
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  std::cout << "\n\nGamma_y = \t" << integral[0] * 12. / pow(T, 3) << " +- " << error[0]  * 12. / pow(T, 3) << "\n\n";
+  std::cout << "\n\nGamma_y = \t" << integral[0] /* * 12. / pow(T, 3) */ << " +- " << error[0] /* * 12. / pow(T, 3)*/ << "\n\n";
 
   // Your Code to Execute //
   auto end = std::chrono::system_clock::now();
