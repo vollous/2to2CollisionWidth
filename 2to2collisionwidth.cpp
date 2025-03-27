@@ -241,14 +241,14 @@ double Process::integrand_theta_phi(const double &theta, const double &phi)
          (delta_r * 4 * Energy(m3, p3) * Energy(m4, p4));
 }
 
-double Process::MonteCarloInt(const std::vector<double> p1,
+double Process::MonteCarloInt(const double &E1,
+                              const double &E2,
+                              const std::vector<double> p1,
                               const std::vector<double> p2)
 {
 
   const std::vector<double> p1p2 = p1 + p2;
   const double p1dotp2           = p1 * p2;
-  const double E1                = Energy(m1, p1);
-  const double E2                = Energy(m2, p2);
   const double s = m1 * m1 + m2 * m2 + 2 * E1 * E2 - 2 * p1dotp2;
 
   // Theta function to see if its possible to have a
@@ -258,8 +258,8 @@ double Process::MonteCarloInt(const std::vector<double> p1,
   double integral = Integrate(E1, E1 + E2, s, p1, p1p2);
 
   // Normalization
-  integral *= _2_PI_FACTORS * Distribution(m1, p1, s1) *
-              Distribution(m2, p2, s2) / (4 * E1 * E2);
+  integral *=
+      _2_PI_FACTORS * Distribution(m1, p1, s1) * Distribution(m2, p2, s2);
 
   return integral;
 };
@@ -316,9 +316,15 @@ int Process::Integrand(const int *ndim,
       r2 * (std::vector<double>){
                cos(theta2) * sin(phi2), sin(theta2) * sin(phi2), cos(phi2)};
 
-  ff[0] = proc->MonteCarloInt(p1, p2) * _4_M_4 * pow(r1, 2) *
-          pow(r1 + scalling, 2) * sin(phi1) * pow(r2, 2) * sin(phi2) *
-          pow(r2 + scalling, 2) / (scalling * scalling);
+  const double E1 = proc->Energy(proc->m1, p1);
+  const double E2 = proc->Energy(proc->m2, p2);
+
+  ff[0] = proc->MonteCarloInt(E1, E2, p1, p2) * _4_M_4 * r1 *
+          pow(r1 + scalling, 2) * sin(phi1) * sin(phi2) * r2 *
+          pow(r2 + scalling, 2) / (4 * scalling * scalling);
+
+  if (proc->m1 > 0) ff[0] *= r1 / E1;
+  if (proc->m2 > 0) ff[0] *= r2 / E2;
 
   return 0;
 };

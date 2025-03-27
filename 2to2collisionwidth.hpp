@@ -196,12 +196,15 @@ struct Process
   /**
    * @brief Integrates over the outgoing momentum for a given p1 and p2.
    * Integrates over the out going angles
-   *
+   * @param E1 energy of particle 1
+   * @param E2 energy of particle 2
    * @param p1 momentum of particle 1
    * @param p2 momentum of particle 2
    * @return double
    */
-  double MonteCarloInt(const std::vector<double> p1,
+  double MonteCarloInt(const double &E1,
+                       const double &E2,
+                       const std::vector<double> p1,
                        const std::vector<double> p2);
 
   /**
