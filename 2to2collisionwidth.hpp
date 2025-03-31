@@ -28,6 +28,7 @@ extern const int *SPIN;
 #include <functional>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
+#include <iomanip>
 #include <iostream>
 #include <numeric>
 #include <string>
