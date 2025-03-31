@@ -21,12 +21,20 @@ struct tLgTOtRH : Process
 {
   using Process::Process; // Import constructor
 
-  double AmplitudeSquared(const double &s, const double &t) override
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
   {
     const double e  = 0.31;
     const double gs = 1.;
     const double sw = 0.472;
     const double mw = 80;
+
+    const double t =
+        pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
+    const double p1dotp2 = p1 * p2;
+    const double s =
+        m1 * m1 + m2 * m2 + 2 * Energy(m1, p1) * Energy(m2, p2) - 2 * p1dotp2;
 
     return (pow(e, 2) * pow(gs, 2) * pow(m1, 4) *
             pow(-2 * pow(m1, 2) - pow(m2, 2) + s + t, 2) *
@@ -43,7 +51,9 @@ struct identity : Process
 {
   using Process::Process; // Import constructor
 
-  double AmplitudeSquared(const double &s, const double &t) override
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
   {
     return 1.;
   }

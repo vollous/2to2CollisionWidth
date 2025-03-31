@@ -51,14 +51,14 @@ double Process::integrate_phi(const double &theta)
 
 double Process::Integrate(const double &E1,
                           const double &ET,
-                          const double &s,
                           const std::vector<double> &p1,
+                          const std::vector<double> &p2,
                           const std::vector<double> &p1p2)
 {
   E1_   = E1;
   ET_   = ET;
-  s_    = s;
   p1_   = p1;
+  p2_   = p2;
   p1p2_ = p1p2;
   p12_  = p1p2_ * p1p2_;
 
@@ -81,7 +81,7 @@ double Process::Integrate(const double &E1,
                       1e-4,
                       1e-4,
                       10000,
-                      GSL_INTEG_GAUSS15,
+                      GSL_INTEG_GAUSS61,
                       w,
                       &result,
                       &error);
@@ -233,10 +233,7 @@ double Process::integrand_theta_phi(const double &theta, const double &phi)
     throw;
   }
 
-  const double t =
-      pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
-
-  return AmplitudeSquared(s_, t) * (1 - Distribution(m3, p3, s3)) *
+  return AmplitudeSquared(p1_, p2_, p3) * (1 - Distribution(m3, p3, s3)) *
          (1 + Distribution(m4, p4, s4)) * r * r * sin(phi) /
          (delta_r * 4 * Energy(m3, p3) * Energy(m4, p4));
 }

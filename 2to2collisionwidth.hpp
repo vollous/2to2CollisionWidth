@@ -151,8 +151,8 @@ struct Process
 {
 
   std::vector<double> p1p2_;
-  std::vector<double> p1_;
-  double E1_, ET_, s_, p12_;
+  std::vector<double> p1_, p2_;
+  double E1_, ET_, p12_;
   const int s1, s2, s3, s4;
   const double m1, m2, m3, m4, T;
 
@@ -236,15 +236,15 @@ struct Process
    *
    * @param E1 Energy of particle 1
    * @param ET Energy of particle 1 + Energy of particle 2
-   * @param s s = (p1 + p2)^2 = m1^2 + m2^2 + 2 * E1 * E2 - 2 p1.p2
    * @param p1 3-momentum of p1
+   * @param p2 3-momentum of p2
    * @param p1p2 p1p2 = p1 + p2
    * @return double
    */
   double Integrate(const double &E1,
                    const double &ET,
-                   const double &s,
                    const std::vector<double> &p1,
+                   const std::vector<double> &p2,
                    const std::vector<double> &p1p2);
 
   /**
@@ -271,13 +271,16 @@ struct Process
                    const double &m4_in);
 
   /**
-   * @brief Amplitude that depends on s and t only!
+   * @brief Amplitude
    *
-   * @param s s = (p1 + p2)^2
-   * @param t t = (p1 - p3)^2
+   * @param p1 momentum of particle 1
+   * @param p2 momentum of particle 2
+   * @param p3 momentum of particle 3
    * @return double
    */
-  virtual double AmplitudeSquared(const double &s, const double &t) = 0;
+  virtual double AmplitudeSquared(const std::vector<double> &p1,
+                                  const std::vector<double> &p2,
+                                  const std::vector<double> &p3) = 0;
 };
 } // namespace TwoToTwoCollisionWidth
 #endif
