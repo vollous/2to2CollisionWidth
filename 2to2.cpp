@@ -25,10 +25,6 @@ struct tLgTOtRH : Process
                           const std::vector<double> &p2,
                           const std::vector<double> &p3) override
   {
-    const double e  = 0.31;
-    const double gs = 1.;
-    const double sw = 0.472;
-    const double mw = 80;
 
     const double t =
         pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
@@ -36,13 +32,13 @@ struct tLgTOtRH : Process
     const double s =
         m1 * m1 + m2 * m2 + 2 * Energy(m1, p1) * Energy(m2, p2) - 2 * p1dotp2;
 
-    return (pow(e, 2) * pow(gs, 2) * pow(m1, 4) *
+    return (pow(el, 2) * pow(gs, 2) * pow(m1, 4) *
             pow(-2 * pow(m1, 2) - pow(m2, 2) + s + t, 2) *
             (-pow(m1, 4) - pow(m2, 4) +
              pow(m2, 2) * (pow(m3, 2) - 2 * (2 * pow(m1, 2) + pow(m2, 2) +
                                              pow(m3, 2) - s - t)) -
              s * t + pow(m1, 2) * (2 * pow(m2, 2) + s + t))) /
-           (pow(m2, 2) * pow(mw, 2) * pow(-pow(m1, 2) + s, 2) * pow(sw, 2) *
+           (pow(m2, 2) * pow(mW, 2) * pow(-pow(m1, 2) + s, 2) * pow(sW, 2) *
             pow(-pow(m1, 2) + t, 2));
   }
 };

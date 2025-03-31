@@ -20,6 +20,7 @@ extern const int GRIDNO;
 extern const char *STATEFILE;
 extern const int *SPIN;
 
+#include "constants.hpp"
 #include <algorithm>
 #include <assert.h>
 #include <chrono>

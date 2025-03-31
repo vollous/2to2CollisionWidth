@@ -17,7 +17,7 @@ find_library(CUBA_LIB NAMES cuba PATHS /opt/homebrew/lib)
 
 find_package(GSL REQUIRED)  
 
-add_executable(2to2collisionwidth 2to2.cpp 2to2collisionwidth.cpp 2to2collisionwidth.hpp)
+add_executable(2to2collisionwidth 2to2.cpp 2to2collisionwidth.cpp 2to2collisionwidth.hpp constants.hpp)
 
 target_compile_features(2to2collisionwidth PUBLIC cxx_std_17)
 target_link_libraries(2to2collisionwidth GSL::gsl ${CUBA_LIB})
