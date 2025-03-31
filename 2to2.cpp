@@ -195,8 +195,11 @@ int main()
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  std::cout << "\n\nGamma_y = \t" << integral[0] * 12. / pow(T, 3) << " +- "
-            << error[0] * 12. / pow(T, 3) << "\n\n";
+  const double vw    = 0.95;
+  const double gamma = 1 / sqrt(1 - pow(vw, 2));
+  const double N1    = -gamma * 2 * pow(M_PI, 3) * pow(T, 2) / 3;
+  std::cout << "\n\nGamma_y = \t" << integral[0] / N1 << " +- " << error[0] / N1
+            << "\n\n";
 
   // Your Code to Execute //
   auto end = std::chrono::system_clock::now();
