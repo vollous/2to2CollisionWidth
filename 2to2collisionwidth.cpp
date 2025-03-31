@@ -194,7 +194,7 @@ double Process::integrand_theta_phi(const double &theta, const double &phi)
   const std::vector<double> p4 = shift * p1p2_ + r * p4_centered;
   const std::vector<double> p3 = p1p2_ - p4;
 
-  if (abs(ET_ / (Energy(m3, p3) + Energy(m4, p4))) - 1 > 1e-8)
+  if (abs(ET_ / (Energy(m3, p3) + Energy(m4, p4)) - 1) > 1e-8)
   {
     std::cout << "------------------\tEnergy mismatch\t---------------------\n";
     std::cout << "r\t" << r << "\n";
