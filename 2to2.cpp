@@ -141,8 +141,8 @@ int main()
   double m4 = 100;
 
   // tLgTOtRH proc(T, s1, s2, s3, s4, m1, m2, m3, m4);
-  identity proc(100, 0, 0, 0, 0, 0, 0, 0, 0);
-  // identity proc(100, s1, s2, s3, s4, 0, 0, 0, 0);
+  // identity proc(100, 0, 0, 0, 0, 0, 0, 0, 0);
+  identity proc(100, s1, s2, s3, s4, 0, 0, 0, 0);
 
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
