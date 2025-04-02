@@ -245,8 +245,6 @@ double Process::MonteCarloInt(const double &E1,
 {
 
   const std::vector<double> p1p2 = p1 + p2;
-  const double p1dotp2           = p1 * p2;
-  const double s = m1 * m1 + m2 * m2 + 2 * E1 * E2 - 2 * p1dotp2;
 
   // Theta function to see if its possible to have a
   // process with a given p1 and p2
