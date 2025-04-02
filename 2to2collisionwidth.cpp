@@ -28,15 +28,23 @@ double Process::integrate_phi(const double &theta)
   if (gsl_integration_qag(F,
                           0,
                           M_PI,
-                          1e-4,
-                          1e-4,
+                          1e-2,
+                          1e-2,
                           10000,
-                          GSL_INTEG_GAUSS15,
+                          GSL_INTEG_GAUSS61,
                           w,
                           &result,
                           &error) != 0)
   {
+    std::cout << "error\t" << error << "\n";
     std::cout << "theta\t" << theta << "\n";
+    std::cout << "theta - pi\t" << std::setprecision(20) << theta - M_PI
+              << "\n";
+
+    for (double p = 0; p < M_PI; p += 0.01)
+    {
+      std::cout << p << "\t" << ptr(p) << "\n";
+    }
 
     std::cout << "E1\t" << E1_ << "\n";
     std::cout << "E2\t" << ET_ - E1_ << "\n";
@@ -78,8 +86,8 @@ double Process::Integrate(const double &E1,
   gsl_integration_qag(&F,
                       0,
                       2 * M_PI,
-                      1e-4,
-                      1e-4,
+                      1e-2,
+                      1e-2,
                       10000,
                       GSL_INTEG_GAUSS61,
                       w,
