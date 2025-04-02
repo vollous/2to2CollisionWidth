@@ -15,6 +15,21 @@ const int NBATCH      = 2000;
 const int GRIDNO      = 0;
 const char *STATEFILE = NULL;
 const int *SPIN       = NULL;
+
+#define NNEW 1000
+#define NMIN 2
+#define FLATNESS 25.
+
+#define KEY1 47
+#define KEY2 1
+#define KEY3 1
+#define MAXPASS 5
+#define BORDER 0.
+#define MAXCHISQ 10.
+#define MINDEVIATION .25
+#define NGIVEN 0
+#define LDXGIVEN NDIM
+#define NEXTRA 0
 using namespace TwoToTwoCollisionWidth;
 
 struct tLgTOtRH : Process
@@ -178,8 +193,8 @@ int main()
   int mode   = 0;
   if (mode == 0)
   {
-    warm_up_vegas(proc.Integrand, proc, 1e4, 20, -1, integral, error, prob);
-    gridded_vegas(proc.Integrand, proc, 1e5, 10, 1, integral, error, prob);
+    warm_up_vegas(proc.Integrand, proc, 1e3, 20, -1, integral, error, prob);
+    gridded_vegas(proc.Integrand, proc, 1e4, 10, 1, integral, error, prob);
   }
   else
   {
