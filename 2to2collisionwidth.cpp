@@ -316,6 +316,13 @@ int Process::Integrand(const int *ndim,
   const double E1 = proc->Energy(proc->m1, p1);
   const double E2 = proc->Energy(proc->m2, p2);
 
+  if (r1 == 0 or r2 == 0 or phi1 == 0 or phi1 == M_PI or phi2 == 0 or
+      phi2 == M_PI)
+  {
+    ff[0] = 0;
+    return 0;
+  }
+
   ff[0] = proc->MonteCarloInt(E1, E2, p1, p2) * _4_M_4 * r1 *
           pow(r1 + scalling, 2) * sin(phi1) * sin(phi2) * r2 *
           pow(r2 + scalling, 2) / (4 * scalling * scalling);
