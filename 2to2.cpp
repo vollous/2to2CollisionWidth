@@ -60,8 +60,8 @@ struct tLgTOtRH : Process
 
 struct tLgTOtRH_massless : Process
 {
-  using Process::Process; // Import constructor
-
+  using Process::Process;           // Import constructor
+  double mtinf = gs / sqrt(6.) * T; // Top thermal mass
   double AmplitudeSquared(const std::vector<double> &p1,
                           const std::vector<double> &p2,
                           const std::vector<double> &p3) override
@@ -72,8 +72,13 @@ struct tLgTOtRH_massless : Process
     const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
 
     double res = (-4 * s * t * el * el * gs * gs * mt_pole * mt_pole) /
-                 (3. * sqrt(t - mtinf * mtinf) * mW * mW * sW * sW);
-    if (res < 0) return 0.;
+                 (3. * pow(t - mtinf * mtinf, 2) * mW * mW * sW * sW);
+
+    if (res < 0)
+    {
+      std::cout << "Negative amplitude sqr? \n";
+      return 0.;
+    }
     return res;
   }
 };
