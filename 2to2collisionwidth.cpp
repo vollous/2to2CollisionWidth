@@ -252,7 +252,7 @@ double Process::MonteCarloInt(const double &E1,
   // process with a given p1 and p2
   if (E1 + E2 - Energy(m3 + m4, p1p2) <= 0) return 0.;
 
-  double integral = Integrate(E1, E1 + E2, s, p1, p1p2);
+  double integral = Integrate(E1, E1 + E2, p1, p2, p1p2);
 
   // Normalization
   integral *=
