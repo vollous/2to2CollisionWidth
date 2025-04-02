@@ -174,6 +174,9 @@ void gridded_vegas(integrand_t integrand,
 
 int main()
 {
+  /*int ncores = 5, pcores = 1e3;
+  cubacores(&ncores, &pcores);*/
+
   double T = 100.;
 
   int s1 = 1;
