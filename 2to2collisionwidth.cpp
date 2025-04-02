@@ -295,7 +295,8 @@ int Process::Integrand(const int *ndim,
     return 0;
   }
 
-  const double scalling = 1; // Put the hypercube on the region of interest.
+  const double scalling =
+      proc->T; // Put the hypercube on the region of interest.
 
   // Spherical coordinates p1
   const double r1     = scalling * xx[0] / (1 - xx[0]);
