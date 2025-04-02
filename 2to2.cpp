@@ -43,6 +43,26 @@ struct tLgTOtRH : Process
   }
 };
 
+struct tLgTOtRH_massless : Process
+{
+  using Process::Process; // Import constructor
+
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
+  {
+
+    const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+
+    double res = (-4 * s * t * el * el * gs * gs * mt_pole * mt_pole) /
+                 (3. * sqrt(t - mtinf * mtinf) * mW * mW * sW * sW);
+    if (res < 0) return 0.;
+    return res;
+  }
+};
+
 struct identity : Process
 {
   using Process::Process; // Import constructor
@@ -147,8 +167,9 @@ int main()
   double m4 = 100;
 
   // tLgTOtRH proc(T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless proc(T, s1, s2, s3, s4, 0, 0, 0, 0);
   // identity proc(100, 0, 0, 0, 0, 0, 0, 0, 0);
-  identity proc(100, s1, s2, s3, s4, 0, 0, 0, 0);
+  // identity proc(100, s1, s2, s3, s4, 0, 0, 0, 0);
 
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
