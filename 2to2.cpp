@@ -2,7 +2,7 @@
 const int NDIM        = 6;
 const int NCOMP       = 1;
 const int NVEC        = 1;
-const double EPSREL   = 1e-4;
+const double EPSREL   = 1e-2;
 const double EPSABS   = 1e-12;
 const int VERBOSE     = 3;
 const int LAST        = 0;
@@ -44,17 +44,59 @@ struct tLgTOtRH : Process
     const double t =
         pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
     const double p1dotp2 = p1 * p2;
-    const double s =
-        m1 * m1 + m2 * m2 + 2 * Energy(m1, p1) * Energy(m2, p2) - 2 * p1dotp2;
+    const double s = m1 * m1 + m2 * m2 + 2 * E1_ * Energy(m2, p2) - 2 * p1dotp2;
+    const double mt = m1;
+    const double mg = m2;
+    const double ms = m3;
+    return (
+        (pow(el, 2) * pow(gs, 2) * pow(mt, 2) *
+         (2 * pow(mg, 4) * pow(ms, 2) * (pow(s, 2) + pow(t, 2)) -
+          2 * pow(mg, 2) * s * t *
+              (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) + pow(s + t, 2)) +
+          pow(mt, 2) *
+              (-(s * t * (pow(s, 2) + pow(t, 2))) -
+               2 * pow(mg, 4) *
+                   (pow(s, 2) + pow(t, 2) + 2 * pow(ms, 2) * (s + t)) +
+               pow(mg, 2) * (4 * pow(ms, 4) * (s + t) + 8 * s * t * (s + t) -
+                             5 * pow(ms, 2) * (pow(s, 2) + pow(t, 2))) +
+               pow(mt, 2) *
+                   (pow(s + t, 3) + 4 * pow(mg, 4) * (pow(ms, 2) + s + t) +
+                    pow(mt, 2) *
+                        (-4 * pow(mg, 4) + 6 * pow(mg, 2) * pow(ms, 2) -
+                         2 * pow(mt, 4) + 4 * pow(mt, 2) * (s + t) -
+                         3 * pow(s + t, 2)) -
+                    2 * pow(mg, 2) *
+                        (2 * pow(ms, 4) + pow(ms, 2) * (s + t) -
+                         2 * (pow(s, 2) - 4 * s * t + pow(t, 2))))))) /
+        (pow(mg, 2) * pow(mW, 2) * pow(-pow(mt, 2) + s, 2) * pow(sW, 2) *
+         pow(-pow(mt, 2) + t, 2)));
+  }
+};
 
-    return (pow(el, 2) * pow(gs, 2) * pow(m1, 4) *
-            pow(-2 * pow(m1, 2) - pow(m2, 2) + s + t, 2) *
-            (-pow(m1, 4) - pow(m2, 4) +
-             pow(m2, 2) * (pow(m3, 2) - 2 * (2 * pow(m1, 2) + pow(m2, 2) +
-                                             pow(m3, 2) - s - t)) -
-             s * t + pow(m1, 2) * (2 * pow(m2, 2) + s + t))) /
-           (pow(m2, 2) * pow(mW, 2) * pow(-pow(m1, 2) + s, 2) * pow(sW, 2) *
-            pow(-pow(m1, 2) + t, 2));
+struct tLgTOtRH_massless_gluon : Process
+{
+  using Process::Process; // Import constructor
+
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
+  {
+
+    const double t =
+        pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
+    const double p1dotp2 = p1 * p2;
+    const double s = m1 * m1 + m2 * m2 + 2 * E1_ * Energy(m2, p2) - 2 * p1dotp2;
+    const double mt = m1;
+    const double ms = m3;
+    return (
+        (2 * pow(el, 2) * pow(gs, 2) * pow(mt, 2) *
+         (2 * pow(ms, 2) * pow(mt, 6) +
+          pow(mt, 4) * (-2 * pow(ms, 4) + (s - 3 * t) * (3 * s - t)) -
+          s * t * (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) + pow(s + t, 2)) +
+          pow(mt, 2) * (2 * pow(ms, 4) * (s + t) + 4 * s * t * (s + t) -
+                        3 * pow(ms, 2) * (pow(s, 2) + pow(t, 2))))) /
+        (pow(mW, 2) * pow(-pow(mt, 2) + s, 2) * pow(sW, 2) *
+         pow(-pow(mt, 2) + t, 2)));
   }
 };
 
@@ -98,6 +140,30 @@ struct tLgTOtRH_massless_helicity : Process
 
     double res = (-2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
                  (pow(mW, 2) * pow(sW, 2) * pow(-pow(mtinf, 2) + t, 2));
+
+    if (res < 0)
+    {
+      std::cout << "Negative amplitude sqr? \n";
+      return 0.;
+    }
+    return res;
+  }
+};
+
+struct tLgTOtRg_massless_helicity : Process
+{
+  using Process::Process;           // Import constructor
+  double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
+  {
+
+    const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+
+    double res = (64 * pow(gs, 4) * (s + t)) / (3. * pow(pow(mtinf, 2) - s, 2));
 
     if (res < 0)
     {
@@ -204,24 +270,85 @@ int main()
 
   double T = 100.;
 
+  double m1, m2, m3, m4;
+
+  double mt = 170;
+  double mg = 10;
+  double ms = 100;
+
   int s1 = 1;
   int s2 = -1;
   int s3 = 1;
   int s4 = -1;
 
+  /****************************************************************************/
+  /******************************* tL g -> tR h *******************************/
+  /****************************************************************************/
+
+  /*
+    t_L                     h
+       \                  /
+        \                /
+         \              /
+           ------------
+         &              \
+        &                \
+       &                  \
+      g                    t_R
+
+    t_L     j
+     \     /
+      \   /
+       \ /
+        |
+        |
+        |
+       & \
+      &   \
+     &     \
+    g       t_R
+  */
+
+  // Complete process. No approximations
+  m1 = mt; // mt
+  m2 = mg; // mg
+  m3 = ms; // ms
+  m4 = mt; // mt
   // tLgTOtRH proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  // Complete process. No approximations but massless gluons
+  m1 = mt; // mt
+  m2 = 0;  // mg
+  m3 = ms; // ms
+  m4 = mt; // mt
   tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, 0, m3, m4);
 
+  // t-channel with massless approximationsi. // not a care about helicities
+  // Gamma_y = 0.00380921 +- 2.20009e-05
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
   // tLgTOtRH_massless proc(T, T * T, s1, s2, s3, s4, m1,m2, m3,m4);
 
+  // t-channel with massless approximationsi. // care very much about helicities
+  // Gamma_y = 0.00571382 +- 3.30013e-05
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
   // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2,m3, m4);
 
+  /****** useless ******/
+
+  // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+  // identity proc(100, 1, s1, s2, s3, s4, 0, 0, 0, 0);
 
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
 
   auto start = std::chrono::system_clock::now();
-  int mode   = 0;
+  int mode   = 1;
   if (mode == 0)
   {
     warm_up_vegas(proc.Integrand, proc, 1e3, 20, -1, integral, error, prob);
