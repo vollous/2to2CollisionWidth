@@ -310,6 +310,8 @@ int main()
   */
 
   // Complete process. No approximations
+  // Time : 8.824 s
+  // Time redux :
   m1 = mt; // mt
   m2 = mg; // mg
   m3 = ms; // ms
@@ -317,14 +319,19 @@ int main()
   // tLgTOtRH proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // Complete process. No approximations but massless gluons
+  // Time : 8.037 s
+
   m1 = mt; // mt
   m2 = 0;  // mg
   m3 = ms; // ms
   m4 = mt; // mt
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, 0, m3, m4);
+  // tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, 0, m3, m4);
 
   // t-channel with massless approximationsi. // not a care about helicities
   // Gamma_y = 0.00380921 +- 2.20009e-05
+  // Time : 35.298 s
+  // Gamma_y = 0.0376673 +- 0.000164028
+  // Time redux : 34.927 s
   m1 = 0; // mt
   m2 = 0; // mg
   m3 = 0; // ms
@@ -333,11 +340,14 @@ int main()
 
   // t-channel with massless approximationsi. // care very much about helicities
   // Gamma_y = 0.00571382 +- 3.30013e-05
+  // Time : 40.739 s
+  // Gamma_y = 0.056501 +- 0.000246043
+  // Time redux : 30.132 s
   m1 = 0; // mt
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****** useless ******/
 
