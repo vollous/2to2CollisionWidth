@@ -329,7 +329,7 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless proc(T, T * T, s1, s2, s3, s4, m1,m2, m3,m4);
+  // tLgTOtRH_massless proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // t-channel with massless approximationsi. // care very much about helicities
   // Gamma_y = 0.00571382 +- 3.30013e-05
@@ -337,7 +337,7 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2,m3, m4);
+  // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****** useless ******/
 
