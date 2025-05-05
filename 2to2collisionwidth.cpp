@@ -268,6 +268,7 @@ double Process::MonteCarloInt(const double &E1,
 };
 
 Process::Process(const double &T_in,
+                 const double &prefactor_in,
                  const int &s1_in,
                  const int &s2_in,
                  const int &s3_in,
@@ -281,6 +282,7 @@ Process::Process(const double &T_in,
     , s3(s3_in)
     , s4(s4_in)
     , T(T_in)
+    , prefactor(prefactor_in)
     , m1(m1_in)
     , m2(m2_in)
     , m3(m3_in)

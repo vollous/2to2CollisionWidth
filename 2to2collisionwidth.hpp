@@ -155,7 +155,7 @@ struct Process
   std::vector<double> p1_, p2_;
   double E1_, ET_, p12_;
   const int s1, s2, s3, s4;
-  const double m1, m2, m3, m4, T;
+  const double m1, m2, m3, m4, T, prefactor;
 
   /**
    * @brief Calculate energy
@@ -252,6 +252,7 @@ struct Process
    * @brief Constructor
    *
    * @param T_in Temperature
+   * @param prefactor_in prefactor
    * @param s1_in = -1 boson, 1 for fermion. particle 1
    * @param s2_in = -1 boson, 1 for fermion. particle 2
    * @param s3_in = -1 boson, 1 for fermion. particle 3
@@ -262,6 +263,7 @@ struct Process
    * @param m4_in mass of particle 4
    */
   explicit Process(const double &T_in,
+                   const double &prefactor_in,
                    const int &s1_in,
                    const int &s2_in,
                    const int &s3_in,

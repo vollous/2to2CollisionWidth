@@ -209,16 +209,14 @@ int main()
   int s3 = 1;
   int s4 = -1;
 
-  double m1 = 170;
-  double m2 = 10;
-  double m3 = 170;
-  double m4 = 100;
+  // tLgTOtRH proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, 0, m3, m4);
 
-  // tLgTOtRH proc(T, s1, s2, s3, s4, m1, m2, m3, m4);
-  // tLgTOtRH_massless proc(T, s1, s2, s3, s4, 0, 0, 0, 0);
-  tLgTOtRH_massless_helicity proc(T, s1, s2, s3, s4, 0, 0, 0, 0);
-  // identity proc(100, 0, 0, 0, 0, 0, 0, 0, 0);
-  // identity proc(100, s1, s2, s3, s4, 0, 0, 0, 0);
+  // tLgTOtRH_massless proc(T, T * T, s1, s2, s3, s4, m1,m2, m3,m4);
+
+  // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2,m3, m4);
+
+
   int comp, nregions, neval, fail;
   cubareal integral[NCOMP], error[NCOMP], prob[NCOMP];
 
@@ -260,12 +258,11 @@ int main()
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  const double vw            = 0.95;
-  const double gamma         = 1; /*/ sqrt(1 - pow(vw, 2));*/
-  const double N1            = gamma * 2 * pow(M_PI, 3) * pow(T, 2) / 3;
-  const double TempPrefactor = T * T;
-  std::cout << "\n\nGamma_y = \t" << integral[0] / (N1 * TempPrefactor)
-            << " +- " << error[0] / (N1 * TempPrefactor) << "\n\n";
+  const double vw    = 0.95;
+  const double gamma = 1; /*/ sqrt(1 - pow(vw, 2));*/
+  const double N1    = gamma * 2 * pow(M_PI, 3) * pow(T, 2) / 3;
+  std::cout << "\n\nGamma_y = \t" << integral[0] / (N1 * proc.prefactor)
+            << " +- " << error[0] / (N1 * proc.prefactor) << "\n\n";
 
   // Your Code to Execute //
   auto end = std::chrono::system_clock::now();
