@@ -1,4 +1,6 @@
 #include "2to2collisionwidth.hpp"
+#include "constants.hpp"
+
 const int NDIM        = 6;
 const int NCOMP       = 1;
 const int NVEC        = 1;
