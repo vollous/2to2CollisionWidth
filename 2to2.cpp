@@ -273,7 +273,8 @@ int main()
   double m1, m2, m3, m4;
 
   double mt = 170;
-  double mg = 10;
+  double mg = gs * sqrt(3. / 3. + 3. / 6.) * T;
+  std::cout << "Gluon mass = " << mg << " GeV\n";
   double ms = 100;
 
   int s1 = 1;
