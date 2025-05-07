@@ -51,27 +51,30 @@ struct tLgTOtRH : Process
     const double mg = m2;
     const double ms = m3;
     return (
-        (pow(el, 2) * pow(gs, 2) * pow(mt, 2) *
-         (2 * pow(mg, 4) * pow(ms, 2) * (pow(s, 2) + pow(t, 2)) -
-          2 * pow(mg, 2) * s * t *
-              (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) + pow(s + t, 2)) +
+        (2 * pow(gs, 2) *
+         (2 * pow(mg, 2) *
+              (pow(mg, 4) * pow(s, 2) +
+               pow(mg, 2) * (pow(ms, 2) * pow(s - t, 2) + pow(s, 2) * t) -
+               s * t *
+                   (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) +
+                    pow(s + t, 2))) +
           pow(mt, 2) *
-              (-(s * t * (pow(s, 2) + pow(t, 2))) -
-               2 * pow(mg, 4) *
-                   (pow(s, 2) + pow(t, 2) + 2 * pow(ms, 2) * (s + t)) +
+              (-4 * pow(mg, 6) * s - s * t * (pow(s, 2) + pow(t, 2)) -
+               2 * pow(mg, 4) * (4 * pow(s, 2) - 2 * s * t + pow(t, 2)) +
                pow(mg, 2) * (4 * pow(ms, 4) * (s + t) + 8 * s * t * (s + t) -
                              5 * pow(ms, 2) * (pow(s, 2) + pow(t, 2))) +
                pow(mt, 2) *
-                   (pow(s + t, 3) + 4 * pow(mg, 4) * (pow(ms, 2) + s + t) +
+                   (2 * pow(mg, 6) + pow(mg, 4) * (8 * s - 2 * t) +
+                    pow(s + t, 3) +
                     pow(mt, 2) *
-                        (-4 * pow(mg, 4) + 6 * pow(mg, 2) * pow(ms, 2) -
+                        (-2 * pow(mg, 4) + 6 * pow(mg, 2) * pow(ms, 2) -
                          2 * pow(mt, 4) + 4 * pow(mt, 2) * (s + t) -
                          3 * pow(s + t, 2)) -
                     2 * pow(mg, 2) *
                         (2 * pow(ms, 4) + pow(ms, 2) * (s + t) -
-                         2 * (pow(s, 2) - 4 * s * t + pow(t, 2))))))) /
-        (pow(mg, 2) * pow(mW, 2) * pow(-pow(mt, 2) + s, 2) * pow(sW, 2) *
-         pow(-pow(mt, 2) + t, 2)));
+                         2 * (pow(s, 2) - 4 * s * t + pow(t, 2)))))) *
+         pow(yt, 2)) /
+        (pow(mg, 2) * pow(-pow(mt, 2) + s, 2) * pow(-pow(mt, 2) + t, 2)));
   }
 };
 
@@ -91,14 +94,14 @@ struct tLgTOtRH_massless_gluon : Process
     const double mt = m1;
     const double ms = m3;
     return (
-        (2 * pow(el, 2) * pow(gs, 2) * pow(mt, 2) *
+        (4 * pow(gs, 2) *
          (2 * pow(ms, 2) * pow(mt, 6) +
           pow(mt, 4) * (-2 * pow(ms, 4) + (s - 3 * t) * (3 * s - t)) -
           s * t * (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) + pow(s + t, 2)) +
           pow(mt, 2) * (2 * pow(ms, 4) * (s + t) + 4 * s * t * (s + t) -
-                        3 * pow(ms, 2) * (pow(s, 2) + pow(t, 2))))) /
-        (pow(mW, 2) * pow(-pow(mt, 2) + s, 2) * pow(sW, 2) *
-         pow(-pow(mt, 2) + t, 2)));
+                        3 * pow(ms, 2) * (pow(s, 2) + pow(t, 2)))) *
+         pow(yt, 2)) /
+        pow(pow(mt, 4) + s * t - pow(mt, 2) * (s + t), 2));
   }
 };
 
