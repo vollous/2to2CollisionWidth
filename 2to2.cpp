@@ -320,6 +320,9 @@ int main()
   // Complete process. No approximations
   // Time : 8.824 s
   // Time redux :
+  // T = 10 | Gamma_y = 2.92322e-06 +- 2.66048e-08
+  // T = 100 | Gamma_y = 0.0132593 +- 0.000115383
+  // T = 200 | Gamma_y = 0.00194427 +- 1.01971e-05
   m1 = mt; // mt
   m2 = mg; // mg
   m3 = ms; // ms
@@ -327,13 +330,16 @@ int main()
   // tLgTOtRH proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // Complete process. No approximations but massless gluons
+  // T = 10 | Gamma_y = 9.34226e-07 +- 1.26619e-08
+  // T = 100 | Gamma_y = 0.000933403 +- 8.98317e-06
+  // T = 200 | Gamma_y = 0.00185429 +- 1.41573e-05
   // Time : 8.037 s
 
   m1 = mt; // mt
   m2 = 0;  // mg
   m3 = ms; // ms
   m4 = mt; // mt
-  // tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, 0, m3, m4);
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // t-channel with massless approximationsi. // not a care about helicities
   // Gamma_y = 0.00380921 +- 2.20009e-05
