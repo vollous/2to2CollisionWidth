@@ -304,7 +304,7 @@ int main()
        &                  \
       g                    t_R
 
-    t_L     j
+    t_L     h
      \     /
       \   /
        \ /
