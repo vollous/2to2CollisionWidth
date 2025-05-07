@@ -270,14 +270,16 @@ int main()
   /*int ncores = 5, pcores = 1e3;
   cubacores(&ncores, &pcores);*/
 
-  double T = 100.;
-
+  double T = 10.;
+  double v = 10;
   double m1, m2, m3, m4;
 
-  double mt = 170;
+  double mt = sqrt(pow(yt * v / sqrt(2.), 2) + pow(gs / sqrt(6.) * T, 2));
   double mg = gs * sqrt(3. / 3. + 3. / 6.) * T;
-  std::cout << "Gluon mass = " << mg << " GeV\n";
   double ms = 100;
+  std::cout << "\n\nTop mass = " << mt << " GeV\n";
+  std::cout << "Scalar mass = " << ms << " GeV\n";
+  std::cout << "Gluon mass = " << mg << " GeV\n\n\n";
 
   int s1 = 1;
   int s2 = -1;
