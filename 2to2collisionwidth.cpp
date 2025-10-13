@@ -180,7 +180,7 @@ double Process::ReT1(const double &g,
 
   double result1, error1;
   if (gsl_integration_qagp(
-          F, points_ptr, np, 1e-2, 1e-2, 10000, w, &result1, &error1) != 0)
+          F, points_ptr, np, 1e-2, 1e-2, 10000, w1, &result1, &error1) != 0)
   {
     std::cout << "Real part of T1 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
