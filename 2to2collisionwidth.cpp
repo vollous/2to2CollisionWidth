@@ -128,7 +128,6 @@ double Process::ReT1(const double &g,
                      const double &mB,
                      const double &mF)
 {
-  if (omega == 0) return 0.;
   auto ptr = [=](const double &p) -> double
   {
     if (p == 0.) return 0.;
@@ -162,13 +161,26 @@ double Process::ReT1(const double &g,
   }
   gsl_integration_workspace_free(w);
   r += result;
+
   gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
-  double points[4] = {0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
-  size_t np        = 4;
+  size_t np;
+  double *points_ptr;
+  double points_zero[3]{0., (omega + k) / 2., omega + k};
+  double points[4]{0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
+  if (omega == 0 or k == 0)
+  {
+    np         = 3;
+    points_ptr = points_zero;
+  }
+  else
+  {
+    np         = 4;
+    points_ptr = points;
+  }
 
   double result1, error1;
   if (gsl_integration_qagp(
-          F, points, np, 1e-2, 1e-2, 10000, w, &result1, &error1) != 0)
+          F, points_ptr, np, 1e-2, 1e-2, 10000, w, &result1, &error1) != 0)
   {
     std::cout << "Real part of T1 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
