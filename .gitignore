@@ -36,3 +36,7 @@ build/*
 .vscode/settings.json
 .vscode/c_cpp_properties.json
 .gitignore
+plots/imt1.pdf
+plots/imt2.pdf
+plots/ret1.pdf
+plots/ret2.pdf
