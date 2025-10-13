@@ -109,6 +109,310 @@ double Process::Distribution(const double &m,
   return 1 / (exp(Energy(m, p) / T) + s);
 }
 
+double Process::L1(const double &p, const double &omega, const double &k)
+{
+  return log(abs((pow(k - 2 * p, 2) - pow(omega, 2)) /
+                 (pow(k + 2 * p, 2) - pow(omega, 2))));
+}
+
+double Process::L2(const double &p, const double &omega, const double &k)
+{
+  return log(abs((pow(omega + k, 2) * (pow(omega - k, 2) - 4 * pow(p, 2))) /
+                 (pow(omega - k, 2) * (pow(omega + k, 2) - 4 * pow(p, 2)))));
+}
+
+double Process::ReT1(const double &g,
+                     const double &C,
+                     const double &omega,
+                     const double &k,
+                     const double &mB,
+                     const double &mF)
+{
+  if (omega == 0) return 0.;
+  auto ptr = [=](const double &p) -> double
+  {
+    if (p == 0.) return 0.;
+    const double _L1 = L1(p, omega, k);
+    const double _L2 = L2(p, omega, k);
+    const double _nF = Distribution(mF, {p, 0, 0}, 1);
+    const double _nB = Distribution(mB, {p, 0, 0}, -1);
+
+    return (p * _L2 * (_nB + _nF) + omega * _L1 * _nB);
+  };
+
+  double r;
+
+  gsl_function_pp<decltype(ptr)> Fp(ptr);
+  gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+  gsl_set_error_handler(&my_gsl_error_handler);
+
+  double result, error;
+  if (gsl_integration_qagiu(
+          F, omega + k, 1e-2, 1e-2, 10000, w, &result, &error) != 0)
+  {
+    std::cout << "Real part of T1 (1))\n";
+    std::cout << "error\t" << error << "\n";
+    std::cout << "error\t" << error << "\n";
+    std::cout << "omega\t" << omega << "\n";
+    std::cout << "k\t" << k << "\n";
+    std::cout << "omega - k\t" << omega - k << "\n";
+    exit(0);
+  }
+  gsl_integration_workspace_free(w);
+  r += result;
+  gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
+  double points[4] = {0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
+  size_t np        = 4;
+
+  double result1, error1;
+  if (gsl_integration_qagp(
+          F, points, np, 1e-2, 1e-2, 10000, w, &result1, &error1) != 0)
+  {
+    std::cout << "Real part of T1 (2))\n";
+    std::cout << "result1\t" << result1 << "\n";
+    std::cout << "error1\t" << error1 << "\n";
+    std::cout << "omega\t" << omega << "\n";
+    std::cout << "k\t" << k << "\n";
+    std::cout << "omega - k\t" << omega - k << "\n";
+    // return 0;
+  }
+  gsl_integration_workspace_free(w1);
+
+  r += result1;
+
+  return g * g * C * r / (8. * M_PI * M_PI * k);
+}
+double Process::ImT1(const double &g,
+                     const double &C,
+                     const double &omega,
+                     const double &k,
+                     const double &mB,
+                     const double &mF)
+{
+  if (abs(omega - k) < 1e-10) return -100.;
+
+  double r = 0;
+
+  if (omega > k)
+  {
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+
+    gsl_set_error_handler(&my_gsl_error_handler);
+
+    auto ptr = [=](const double &p) -> double
+    {
+      return (Distribution(mB, {p, 0, 0}, -1) * (p - omega) -
+              p * Distribution(mF, {p, 0, 0}, 1));
+    };
+
+    gsl_function_pp<decltype(ptr)> Fp(ptr);
+    const gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+    double result, error;
+    if (gsl_integration_qag(F,
+                            abs(omega - k) / 2.,
+                            (omega + k) / 2.,
+                            1e-2,
+                            1e-2,
+                            10000,
+                            GSL_INTEG_GAUSS61,
+                            w,
+                            &result,
+                            &error) != 0)
+    {
+      std::cout << "Imaginary part of T1 (1))\n";
+      std::cout << "error\t" << error << "\n";
+      std::cout << "omega\t" << omega << "\n";
+      std::cout << "k\t" << k << "\n";
+      std::cout << "omega - k\t" << omega - k << "\n";
+      exit(0);
+    }
+    gsl_integration_workspace_free(w);
+    r += result;
+  }
+  else
+  {
+
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+
+    gsl_set_error_handler(&my_gsl_error_handler);
+
+    auto ptr = [=](const double &p) -> double
+    {
+      return -(Distribution(mB, {p, 0, 0}, -1) * (p - omega) +
+               p * Distribution(mF, {p, 0, 0}, 1));
+    };
+
+    gsl_function_pp<decltype(ptr)> Fp(ptr);
+    gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+    double result, error;
+    if (gsl_integration_qagiu(
+            F, (omega + k) / 2., 1e-2, 1e-2, 10000, w, &result, &error) != 0)
+    {
+      std::cout << "Imaginary part of T1 (2))\n";
+      std::cout << "error\t" << error << "\n";
+      std::cout << "omega\t" << omega << "\n";
+      std::cout << "k\t" << k << "\n";
+      std::cout << "omega - k\t" << omega - k << "\n";
+      exit(0);
+    }
+    gsl_integration_workspace_free(w);
+    gsl_integration_workspace *w2 = gsl_integration_workspace_alloc(10000);
+    r += result; // This sign comes from the retarded propagator
+
+    auto ptr2 = [=](const double &p) -> double
+    {
+      return -(Distribution(mB, {p, 0, 0}, -1) * (p + omega) +
+               p * Distribution(mF, {p, 0, 0}, 1));
+    };
+    gsl_function_pp<decltype(ptr2)> Fp2(ptr2);
+    gsl_function *F2 = static_cast<gsl_function *>(&Fp2);
+
+    result, error;
+    if (gsl_integration_qagiu(
+            F2, (k - omega) / 2., 1e-2, 1e-2, 10000, w2, &result, &error) != 0)
+    {
+      std::cout << "Imaginary part of T1 (3))\n";
+      std::cout << "error\t" << error << "\n";
+      std::cout << "omega\t" << omega << "\n";
+      std::cout << "k\t" << k << "\n";
+      std::cout << "omega - k\t" << omega - k << "\n";
+      exit(0);
+    }
+    gsl_integration_workspace_free(w);
+    r += result;
+  }
+  return g * g * C * r / (8. * M_PI * k);
+}
+double Process::ReT2(const double &g,
+                     const double &C,
+                     const double &omega,
+                     const double &k,
+                     const double &mB,
+                     const double &mF)
+{
+  const double fac = (omega * omega - k * k) / (2. * k);
+  auto ptr         = [=](const double &p) -> double
+  {
+    if (p == 0.) return 0.;
+    const double _L1 = L1(p, omega, k);
+    const double _nF = Distribution(mF, {p, 0, 0}, 1);
+    const double _nB = Distribution(mB, {p, 0, 0}, -1);
+
+    return (4 * p + fac * _L1) * _nB + (4 * p - fac * _L1) * _nF;
+  };
+
+  double r;
+
+  gsl_function_pp<decltype(ptr)> Fp(ptr);
+  gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+  gsl_set_error_handler(&my_gsl_error_handler);
+
+  double result, error;
+  if (gsl_integration_qagiu(
+          F, omega + k, 1e-2, 1e-2, 10000, w, &result, &error) != 0)
+  {
+    std::cout << "Real part of T2 (1))\n";
+    std::cout << "error\t" << error << "\n";
+    std::cout << "error\t" << error << "\n";
+    std::cout << "omega\t" << omega << "\n";
+    std::cout << "k\t" << k << "\n";
+    std::cout << "omega - k\t" << omega - k << "\n";
+    exit(0);
+  }
+  gsl_integration_workspace_free(w);
+  r += result;
+  gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
+
+  size_t np;
+  double *points_ptr;
+  double points_zero[3]{0., (omega + k) / 2., omega + k};
+  double points[4]{0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
+  if (omega == 0 or k == 0)
+  {
+    np         = 3;
+    points_ptr = points_zero;
+  }
+  else
+  {
+    np         = 4;
+    points_ptr = points;
+  }
+
+  double result1, error1;
+  if (gsl_integration_qagp(
+          F, points_ptr, np, 1e-2, 1e-2, 10000, w, &result1, &error1) != 0)
+  {
+    std::cout << "np\t" << np << "\n";
+    for (int i = 0; i < sizeof(np); i++)
+    {
+      std::cout << ">" << i << "\t" << points_ptr[i] << "\n";
+    }
+    std::cout << "Real part of T2 (2))\n";
+    std::cout << "result1\t" << result1 << "\n";
+    std::cout << "error1\t" << error1 << "\n";
+    std::cout << "omega\t" << omega << "\n";
+    std::cout << "k\t" << k << "\n";
+    std::cout << "omega - k\t" << omega - k << "\n";
+    exit(0);
+    // return 0;
+  }
+  gsl_integration_workspace_free(w1);
+
+  r += result1;
+
+  return g * g * C * r / (8. * M_PI * M_PI);
+}
+double Process::ImT2(const double &g,
+                     const double &C,
+                     const double &omega,
+                     const double &k,
+                     const double &mB,
+                     const double &mF)
+{
+  if (abs(omega - k) < 1e-10) return 0.;
+
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+
+  gsl_set_error_handler(&my_gsl_error_handler);
+
+  auto ptr = [=](const double &p) -> double
+  {
+    return (Distribution(mB, {p, 0, 0}, -1) - Distribution(mF, {p, 0, 0}, 1));
+  };
+
+  gsl_function_pp<decltype(ptr)> Fp(ptr);
+  const gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+  double result, error;
+  if (gsl_integration_qag(F,
+                          abs(omega - k) / 2.,
+                          (omega + k) / 2.,
+                          1e-2,
+                          1e-2,
+                          10000,
+                          GSL_INTEG_GAUSS61,
+                          w,
+                          &result,
+                          &error) != 0)
+  {
+    std::cout << "Imaginary part of T2\n";
+    std::cout << "error\t" << error << "\n";
+    std::cout << "omega\t" << omega << "\n";
+    std::cout << "k\t" << k << "\n";
+    std::cout << "omega - k\t" << omega - k << "\n";
+    return INFINITY;
+  }
+  gsl_integration_workspace_free(w);
+
+  return -g * g * C / (16. * M_PI * k) * (omega * omega - k * k) * result;
+}
+
 void Process::calculate_r(double &r,
                           double &delta_r,
                           double shift,

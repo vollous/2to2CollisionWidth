@@ -178,6 +178,98 @@ struct Process
   Distribution(const double &m, const std::vector<double> &p, const int &s);
 
   /**
+   * @brief \f$ L_1 \f$ function
+   *
+   * @param p momentum integrated
+   * @param omega external energy
+   * @param k external momentum
+   * @return double
+   */
+  double L1(const double &p, const double &omega, const double &k);
+
+  /**
+   * @brief \f$ L_2 \f$ function
+   *
+   * @param p momentum integrated
+   * @param omega external energy
+   * @param k external momentum
+   * @return double
+   */
+  double L2(const double &p, const double &omega, const double &k);
+
+  /**
+   * @brief Real part of \f$ T_1 \f$ function
+   *
+   * @param g Boson coupling constant
+   * @param C \f$ C(R) \f$ of the fermion representation
+   * @param omega incoming energy
+   * @param k incoming momenta
+   * @param mB boson mass
+   * @param mF fermion mass
+   * @return double
+   */
+  double ReT1(const double &g,
+              const double &C,
+              const double &omega,
+              const double &k,
+              const double &mB,
+              const double &mF);
+
+  /**
+   * @brief Imaginary part of \f$ T_1 \f$ function
+   *
+   * @param g Boson coupling constant
+   * @param C \f$ C(R) \f$ of the fermion representation
+   * @param omega incoming energy
+   * @param k incoming momenta
+   * @param mB boson mass
+   * @param mF fermion mass
+   * @return double
+   */
+  double ImT1(const double &g,
+              const double &C,
+              const double &omega,
+              const double &k,
+              const double &mB,
+              const double &mF);
+
+  /**
+   * @brief Real part of \f$ T_2 \f$ function
+   *
+   * @param g Boson coupling constant
+   * @param C \f$ C(R) \f$ of the fermion representation
+   * @param omega incoming energy
+   * @param k incoming momenta
+   * @param mB boson mass
+   * @param mF fermion mass
+   * @return double
+   */
+  double ReT2(const double &g,
+              const double &C,
+              const double &omega,
+              const double &k,
+              const double &mB,
+              const double &mF);
+
+  /**
+   * @brief Imaginary part of \f$ T_2 \f$ function
+   *
+   * @param g Boson coupling constant
+   * @param C \f$ C(R) \f$ of the fermion representation
+   * @param omega incoming energy
+   * @param k incoming momenta
+   * @param mB boson mass
+   * @param mF fermion mass
+   * @return double
+   */
+  double ImT2(const double &g,
+              const double &C,
+              const double &omega,
+              const double &k,
+              const double &mB,
+              const double &mF);
+
+  /**
    * @brief Calculate r for a given rcoeff and shift. theta and phi are not used
    * in this routine
    *

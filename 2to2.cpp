@@ -1,5 +1,6 @@
 #include "2to2collisionwidth.hpp"
 #include "constants.hpp"
+#include "matplotlibcpp.h"
 
 const int NDIM        = 6;
 const int NCOMP       = 1;
@@ -33,7 +34,7 @@ const int *SPIN       = NULL;
 #define LDXGIVEN NDIM
 #define NEXTRA 0
 using namespace TwoToTwoCollisionWidth;
-
+namespace plt = matplotlibcpp;
 struct tLgTOtRH : Process
 {
   using Process::Process; // Import constructor
@@ -267,9 +268,171 @@ void gridded_vegas(integrand_t integrand,
         error,
         prob);
 }
+void test_ReT1()
+{
+  plt::cla();
+  double T = 1.;
+  double v = 10;
+  double m1, m2, m3, m4;
+
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+
+  int s1 = 1;
+  int s2 = -1;
+  int s3 = 1;
+  int s4 = -1;
+
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  for (double k : {0.5, 1.0, 1.5})
+  {
+    std::vector<double> x, y;
+
+    for (double omega = 0; omega < 2; omega += 0.011)
+    {
+      x.push_back(omega);
+      y.push_back(proc.ReT1(1, 1, omega, k, 0, 0));
+    }
+
+    plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
+  }
+  plt::xlabel("$\\omega$");
+  plt::ylabel("$\\Re(T_1)$");
+  plt::legend();
+  plt::tight_layout();
+  plt::save("../plots/ret1.pdf");
+}
+
+void test_ImT1()
+{
+  plt::cla();
+  double T = 1.;
+  double v = 10;
+  double m1, m2, m3, m4;
+
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+
+  int s1 = 1;
+  int s2 = -1;
+  int s3 = 1;
+  int s4 = -1;
+
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  for (double k : {0.5, 1.0, 1.5})
+  {
+    std::vector<double> x, y;
+
+    for (double omega = 0; omega < 2; omega += 0.0011)
+    {
+      x.push_back(omega);
+      y.push_back(proc.ImT1(1, 1, omega, k, 0, 0));
+    }
+
+    plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
+  }
+  plt::xlabel("$\\omega$");
+  plt::ylabel("$\\Im(T_1)$");
+  plt::legend();
+  plt::tight_layout();
+  plt::save("../plots/imt1.pdf");
+}
+
+void test_ReT2()
+{
+  plt::cla();
+  double T = 1.;
+  double v = 10;
+  double m1, m2, m3, m4;
+
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+
+  int s1 = 1;
+  int s2 = -1;
+  int s3 = 1;
+  int s4 = -1;
+
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  for (double k : {0.5, 1.0, 1.5})
+  {
+    std::vector<double> x, y;
+
+    for (double omega = 0; omega < 2; omega += 0.011)
+    {
+      x.push_back(omega);
+      y.push_back(proc.ReT2(1, 1, omega, k, 0, 0));
+    }
+
+    plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
+  }
+  plt::xlabel("$\\omega$");
+  plt::ylabel("$\\Re(T_2)$");
+  plt::legend();
+  plt::tight_layout();
+  plt::save("../plots/ret2.pdf");
+}
+
+void test_ImT2()
+{
+  plt::cla();
+  double T = 1.;
+  double v = 10;
+  double m1, m2, m3, m4;
+
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+
+  int s1 = 1;
+  int s2 = -1;
+  int s3 = 1;
+  int s4 = -1;
+
+  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  for (double k : {0.5, 1.0, 1.5})
+  {
+    std::vector<double> x, y;
+
+    for (double omega = 0; omega < 2; omega += 0.001)
+    {
+      x.push_back(omega);
+      y.push_back(proc.ImT2(1, 1, omega, k, 0, 0));
+    }
+
+    plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
+  }
+
+  plt::xlabel("$\\omega$");
+  plt::ylabel("$\\Im(T_2)$");
+  plt::legend();
+  plt::tight_layout();
+  plt::save("../plots/imt2.pdf");
+}
+
+void testing()
+{
+  test_ReT1();
+  test_ImT1();
+  test_ReT2();
+  test_ImT2();
+}
 
 int main()
 {
+
+  testing();
   /*int ncores = 5, pcores = 1e3;
   cubacores(&ncores, &pcores);*/
 
