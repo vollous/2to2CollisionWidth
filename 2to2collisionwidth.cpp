@@ -130,7 +130,8 @@ double Process::ReT1(const double &g,
 {
   auto ptr = [=](const double &p) -> double
   {
-    if (p == 0.) return 0.;
+    if (p == 0 and mB == 0)
+      return (-8 * k * T * omega) / (pow(k, 2) - pow(omega, 2));
     const double _L1 = L1(p, omega, k);
     const double _L2 = L2(p, omega, k);
     const double _nF = Distribution(mF, {p, 0, 0}, 1);
