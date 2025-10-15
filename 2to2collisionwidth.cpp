@@ -1,5 +1,6 @@
 #include "2to2collisionwidth.hpp"
-
+#include <fstream>
+#include <iostream>
 using namespace TwoToTwoCollisionWidth;
 
 void my_gsl_error_handler(const char *reason,
@@ -35,19 +36,33 @@ double Process::integrate_phi(const double &theta)
                           w,
                           &result,
                           &error) != 0)
+
   {
+    std::cout << "-- Integrate phi --\n";
+
+    std::ofstream MyFile("filename.tsv");
+
+    for (double p = 0; p < M_PI; p += 1e-2)
+    {
+      // std::cout << "\tp\t" << p << "\t";
+      MyFile << p << "\t" << ptr(p) << "\n";
+    }
+
+    MyFile.close();
+
+    std::cout << "\n\nresults\t" << result << "\n";
     std::cout << "error\t" << error << "\n";
+    std::cout << "rel\t" << error / result << "\n";
     std::cout << "theta\t" << theta << "\n";
     std::cout << "theta - pi\t" << std::setprecision(20) << theta - M_PI
               << "\n";
-
-    for (double p = 0; p < M_PI; p += 0.01)
-    {
-      std::cout << p << "\t" << ptr(p) << "\n";
-    }
-
     std::cout << "E1\t" << E1_ << "\n";
     std::cout << "E2\t" << ET_ - E1_ << "\n";
+    std::cout << "p1\t" << p1_[0] << "\t" << p1_[1] << "\t" << p1_[2] << "\t"
+              << "\n";
+    std::cout << "p2\t" << (p1p2_ - p1_)[0] << "\t" << (p1p2_ - p1_)[1] << "\t"
+              << (p1p2_ - p1_)[2] << "\t"
+              << "\n\n\n";
 
     std::cout << "\nE1 + E2\t" << ET_ << "\n";
     std::cout << "Minimum Energy\t" << (ET_ - Energy(m3 + m4, p1p2_)) << "\n";
