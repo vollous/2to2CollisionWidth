@@ -131,6 +131,28 @@ T operator*(const std::vector<T> &a, const std::vector<T> &b)
   return result1;
 }
 
+/**
+ * @brief multiplication of matrix with vector
+ */
+template <typename T>
+std::vector<T> operator*(const std::vector<std::vector<T>> &a,
+                         const std::vector<T> &b)
+{
+  if (a.size() != b.size())
+    throw("Multiplication of matrix with vector cannot be done. Must have the "
+          "same size.");
+
+  std::vector<T> result;
+  result.reserve(a.size());
+
+  std::transform(a.begin(),
+                 a.end(),
+                 std::back_inserter(result),
+                 [&](std::vector<T> i) { return (i * b); });
+
+  return result;
+}
+
 template <typename F> class gsl_function_pp : public gsl_function
 {
 public:
