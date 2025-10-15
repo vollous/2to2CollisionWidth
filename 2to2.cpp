@@ -156,6 +156,44 @@ struct tLgTOtRH_massless_helicity_thermal_masses : Process
   }
 };
 
+struct tLgTOtRH_massless_helicity_HTL : Process
+{
+  using Process::Process;           // Import constructor
+  double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
+  {
+
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+
+    // Self energy
+    const double omega = Energy(0, p1) - Energy(0, p3);
+    const double k     = Energy(0, p1 - p3);
+    const double t =
+        -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
+
+    const double a = HTLa(mtinf, omega, k);
+    const double b = HTLb(mtinf, omega, k);
+
+    double res =
+        -(2 * pow(1 + a, 2) * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2)) * s *
+        t /
+        (pow(mW, 2) * pow(sW, 2) *
+         pow(pow(b, 2) + 2 * (1 + a) * b * omega + pow(1 + a, 2) * t, 2));
+
+    if (res < 0)
+    {
+      std::cout << "Negative amplitude sqr? \n";
+      return 0.;
+    }
+    return res;
+  }
+};
+
+/********************* tL g -> tR g *********************/
+
 struct tLgTOtRg_massless_helicity : Process
 {
   using Process::Process;           // Import constructor
@@ -525,9 +563,54 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity_thermal_masses proc(
-  //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_thermal_masses proc(
+      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
+  /*double mA              = 10;
+  double mB              = 30;
+  std::vector<double> pA = {0, 0, 10};
+
+  double phi    = 1.6;
+  float cos_phi = cos(phi);
+  float sin_phi = sin(phi);
+
+  std::vector<double> pB = {10 * cos_phi, 10 * sin_phi, 0};
+
+  std::cout << "Energy A\t" << proc.Energy(mA, pA) << "\t"
+            << proc.Energy(mB, pB) << "\t" << pA * pB << "\n";
+
+  std::cout << proc.MonteCarloInt(
+                   proc.Energy(mA, pA), proc.Energy(mB, pB), pA, pB)
+            << "\t\t<<<<<<<\n\n";
+
+  // exit(0);*/
+  //  t-channel with massless HTL. // care very much about helicities
+  //  Gamma_y =
+  //  Time :
+  //  Gamma_y =
+  //  Time redux :
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+  /* tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
+   m4);
+
+  std::vector<double> p1 = {
+      -2.4319545096067867185, 0.81642954775194209738, -2.168603517231575406};
+  std::vector<double> p2 = {
+      -2.9883572349034142057, 0.7114617547144796994, 4.9419805021096898656};
+  double theta = M_PI;
+
+  proc.E1_   = proc.Energy(m1, p1);
+  proc.ET_   = proc.Energy(m1, p1) + proc.Energy(m2, p2);
+  proc.p1_   = p1;
+  proc.p2_   = p2;
+  proc.p1p2_ = p1 + p2;
+  proc.p12_  = proc.p1p2_ * proc.p1p2_;
+
+  proc.integrate_phi(theta);
+  exit(0);*/
   /****** useless ******/
 
   // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
