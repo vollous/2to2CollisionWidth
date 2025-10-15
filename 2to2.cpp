@@ -131,7 +131,7 @@ struct tLgTOtRH_massless : Process
   }
 };
 
-struct tLgTOtRH_massless_helicity : Process
+struct tLgTOtRH_massless_helicity_thermal_masses : Process
 {
   using Process::Process;           // Import constructor
   double mtinf = gs / sqrt(6.) * T; // Top thermal mass
@@ -503,7 +503,7 @@ int main()
   m2 = 0;  // mg
   m3 = ms; // ms
   m4 = mt; // mt
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  // tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // t-channel with massless approximationsi. // not a care about helicities
   // Gamma_y = 0.00380921 +- 2.20009e-05
@@ -525,7 +525,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  // tLgTOtRH_massless_helicity_thermal_masses proc(
+  //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****** useless ******/
 
