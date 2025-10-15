@@ -432,7 +432,8 @@ void testing()
 int main()
 {
 
-  testing();
+  // testing();
+
   /*int ncores = 5, pcores = 1e3;
   cubacores(&ncores, &pcores);*/
 
