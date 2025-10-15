@@ -587,6 +587,21 @@ double Process::integrand_theta_phi(const double &theta, const double &phi)
     throw;
   }
 
+  /*double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+
+  const double omega = Energy(0, p1_) - Energy(0, p3);
+  const double k     = Energy(0, p1_ - p3);
+  const double t =
+      -2 * Energy(0, p1_) * Energy(0, p3) + 2 * p1_ * p3; // omega^2-k^2
+  const double a = HTLa(mtinf, omega, k);
+  const double b = HTLb(mtinf, omega, k);
+
+  std::cout << "Phi " << phi << " |\t" << AmplitudeSquared(p1_, p2_, p3) <<
+     "\t"
+            << pow(-pow(mtinf, 2) + t, 2) << "\t"
+            << pow(pow(b, 2) + 2 * (1 + a) * b * omega + pow(1 + a, 2) * t, 2)
+            << "\n";*/
+
   return AmplitudeSquared(p1_, p2_, p3) * (1 - Distribution(m3, p3, s3)) *
          (1 + Distribution(m4, p4, s4)) * r * r * sin(phi) /
          (delta_r * 4 * Energy(m3, p3) * Energy(m4, p4));
