@@ -657,7 +657,7 @@ int Process::Integrand(const int *ndim,
 {
   auto proc = static_cast<Process *>(userdata);
 
-  if (xx[0] == 1 or xx[3] == 1)
+  if (xx[0] == 1 or xx[1] == 1)
   {
     // TODO might be removable
     ff[0] = 0.;
@@ -668,34 +668,27 @@ int Process::Integrand(const int *ndim,
       proc->T; // Put the hypercube on the region of interest.
 
   // Spherical coordinates p1
-  const double r1     = scalling * xx[0] / (1 - xx[0]);
-  const double theta1 = 2 * M_PI * xx[1];
-  const double phi1   = M_PI * xx[2];
-  const std::vector<double> p1 =
-      r1 * (std::vector<double>){
-               cos(theta1) * sin(phi1), sin(theta1) * sin(phi1), cos(phi1)};
+  const double r1              = scalling * xx[0] / (1 - xx[0]);
+  const std::vector<double> p1 = (std::vector<double>){0, 0, r1};
 
   // Spherical coordinates p2
-  const double r2     = scalling * xx[3] / (1 - xx[3]);
-  const double theta2 = 2 * M_PI * xx[4];
-  const double phi2   = M_PI * xx[5];
+  const double r2  = scalling * xx[1] / (1 - xx[1]);
+  const double phi = M_PI * xx[2];
   const std::vector<double> p2 =
-      r2 * (std::vector<double>){
-               cos(theta2) * sin(phi2), sin(theta2) * sin(phi2), cos(phi2)};
+      r2 * (std::vector<double>){sin(phi), 0., cos(phi)};
 
   const double E1 = proc->Energy(proc->m1, p1);
   const double E2 = proc->Energy(proc->m2, p2);
 
-  if (r1 == 0 or r2 == 0 or phi1 == 0 or phi1 == M_PI or phi2 == 0 or
-      phi2 == M_PI)
+  if (r1 == 0 or r2 == 0 or phi == 0 or phi == M_PI)
   {
     ff[0] = 0;
     return 0;
   }
 
   ff[0] = proc->MonteCarloInt(E1, E2, p1, p2) * _4_M_4 * r1 *
-          pow(r1 + scalling, 2) * sin(phi1) * sin(phi2) * r2 *
-          pow(r2 + scalling, 2) / (4 * scalling * scalling);
+          pow(r1 + scalling, 2) * sin(phi) * r2 * pow(r2 + scalling, 2) /
+          (4 * scalling * scalling);
 
   if (proc->m1 > 0) ff[0] *= r1 / E1;
   if (proc->m2 > 0) ff[0] *= r2 / E2;

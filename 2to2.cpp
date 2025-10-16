@@ -2,10 +2,10 @@
 #include "constants.hpp"
 #include "matplotlibcpp.h"
 
-const int NDIM        = 6;
+const int NDIM        = 3;
 const int NCOMP       = 1;
 const int NVEC        = 1;
-const double EPSREL   = 1e-2;
+const double EPSREL   = 1e-3;
 const double EPSABS   = 1e-12;
 const int VERBOSE     = 3;
 const int LAST        = 0;

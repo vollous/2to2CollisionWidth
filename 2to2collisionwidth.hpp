@@ -34,7 +34,7 @@ extern const int *SPIN;
 #include <numeric>
 #include <string>
 
-constexpr double _4_M_4        = 4 * M_PI * M_PI * M_PI * M_PI; /* 4 pi^4 */
+constexpr double _4_M_4        = 8 * M_PI * M_PI * M_PI; /* 8 pi^3 */
 constexpr double _2_PI_FACTORS = pow(2 * M_PI, 4) / pow(2 * M_PI, 3 * 3);
 
 namespace TwoToTwoCollisionWidth
