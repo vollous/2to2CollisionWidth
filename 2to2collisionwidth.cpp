@@ -98,6 +98,9 @@ double Process::Integrate(const double &E1,
 
   double result, error;
 
+  // gsl_integration_qags(&F, 0, 2 * M_PI, 1e-4, 1e-4, 10000, w, &result,
+  // &error);
+
   gsl_integration_qag(&F,
                       0,
                       2 * M_PI,
@@ -122,19 +125,6 @@ double Process::Distribution(const double &m,
                              const int &s)
 {
   return 1 / (exp(Energy(m, p) / T) + s);
-}
-
-double Process::HTLa(const double &m, const double &omega, const double &k)
-{
-  const double logomegak = log(abs((omega + k) / (omega - k)));
-  return pow(m, 2) / k * (1 - omega / (2. * k) * logomegak);
-}
-
-double Process::HTLb(const double &m, const double &omega, const double &k)
-{
-  const double logomegak = log(abs((omega + k) / (omega - k)));
-  return pow(m, 2) / k *
-         (-omega / k + (pow(omega / k, 2) - 1) / 2. * logomegak);
 }
 
 double Process::L1(const double &p, const double &omega, const double &k)

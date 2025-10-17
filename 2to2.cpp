@@ -5,7 +5,7 @@
 const int NDIM        = 3;
 const int NCOMP       = 1;
 const int NVEC        = 1;
-const double EPSREL   = 1e-3;
+const double EPSREL   = 1e-2;
 const double EPSABS   = 1e-12;
 const int VERBOSE     = 3;
 const int LAST        = 0;
@@ -160,6 +160,34 @@ struct tLgTOtRH_massless_helicity_HTL : Process
 {
   using Process::Process;           // Import constructor
   double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+
+  // Calculation of "a" and "b"
+
+  inline double Rea(const double &m, const double &omega, const double &k)
+  {
+    const double logomegak = log(abs((omega + k) / (omega - k)));
+    return pow(m, 2) / k * (1 - omega / (2. * k) * logomegak);
+  }
+
+  inline double Ima(const double &m, const double &omega, const double &k)
+  {
+    const double arglog = std::arg((omega + k) / (omega - k));
+    return pow(m, 2) / k * (-omega / (2. * k) * arglog);
+  }
+
+  inline double Reb(const double &m, const double &omega, const double &k)
+  {
+    const double logomegak = log(abs((omega + k) / (omega - k)));
+    return pow(m, 2) / k *
+           (-omega / k + (pow(omega / k, 2) - 1) / 2. * logomegak);
+  }
+
+  inline double Imb(const double &m, const double &omega, const double &k)
+  {
+    const double arglog = std::arg((omega + k) / (omega - k));
+    return pow(m, 2) / k * ((pow(omega / k, 2) - 1) / 2. * arglog);
+  }
+
   double AmplitudeSquared(const std::vector<double> &p1,
                           const std::vector<double> &p2,
                           const std::vector<double> &p3) override
@@ -174,14 +202,30 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     const double t =
         -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
 
-    const double a = HTLa(mtinf, omega, k);
-    const double b = HTLb(mtinf, omega, k);
+    const double REa = Rea(mtinf, omega, k);
+    const double IMa = Ima(mtinf, omega, k);
+    const double REb = Reb(mtinf, omega, k);
+    const double IMb = Imb(mtinf, omega, k);
 
     double res =
-        -(2 * pow(1 + a, 2) * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2)) * s *
-        t /
-        (pow(mW, 2) * pow(sW, 2) *
-         pow(pow(b, 2) + 2 * (1 + a) * b * omega + pow(1 + a, 2) * t, 2));
+        ((2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) *
+          (pow(IMa, 2) + pow(1 + REa, 2))) /
+         (pow(mW, 2) * pow(sW, 2) *
+          (pow(IMb, 4) + 4 * IMa * pow(IMb, 3) * omega +
+           4 * omega * (1 + REa) * pow(REb, 3) + pow(REb, 4) +
+           4 * omega * (1 + REa) * (pow(IMa, 2) + pow(1 + REa, 2)) * REb * t +
+           pow(pow(IMa, 2) + pow(1 + REa, 2), 2) * pow(t, 2) +
+           2 * pow(IMb, 2) *
+               (2 * pow(omega, 2) * (pow(IMa, 2) + pow(1 + REa, 2)) +
+                2 * omega * (1 + REa) * REb + pow(REb, 2) +
+                (pow(IMa, 2) - pow(1 + REa, 2)) * t) +
+           2 * pow(REb, 2) *
+               (2 * pow(omega, 2) * (pow(IMa, 2) + pow(1 + REa, 2)) +
+                (-pow(IMa, 2) + pow(1 + REa, 2)) * t) +
+           4 * IMa * IMb *
+               (omega * pow(REb, 2) +
+                omega * (pow(IMa, 2) + pow(1 + REa, 2)) * t +
+                2 * (1 + REa) * REb * t))));
 
     if (res < 0)
     {
@@ -563,8 +607,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  tLgTOtRH_massless_helicity_thermal_masses proc(
-      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  // tLgTOtRH_massless_helicity_thermal_masses proc(
+  //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /*double mA              = 10;
   double mB              = 30;
@@ -593,10 +637,9 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  /* tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
-   m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
-  std::vector<double> p1 = {
+  /*std::vector<double> p1 = {
       -2.4319545096067867185, 0.81642954775194209738, -2.168603517231575406};
   std::vector<double> p2 = {
       -2.9883572349034142057, 0.7114617547144796994, 4.9419805021096898656};

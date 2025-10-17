@@ -25,6 +25,7 @@ extern const int *SPIN;
 #include <assert.h>
 #include <chrono>
 #include <cmath>
+#include <complex>
 #include <cuba.h>
 #include <functional>
 #include <gsl/gsl_errno.h>
@@ -198,26 +199,6 @@ struct Process
    */
   double
   Distribution(const double &m, const std::vector<double> &p, const int &s);
-
-  /**
-   * @brief Calculated the a contribution for the selfenergy in the HTL limit.
-   *
-   * @param m
-   * @param omega
-   * @param k
-   * @return double
-   */
-  double HTLa(const double &m, const double &omega, const double &k);
-
-  /**
-   * @brief Calculated the a contribution for the selfenergy in the HTL limit.
-   *
-   * @param m
-   * @param omega
-   * @param k
-   * @return double
-   */
-  double HTLb(const double &m, const double &omega, const double &k);
 
   /**
    * @brief \f$ L_1 \f$ function
