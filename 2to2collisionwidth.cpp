@@ -44,7 +44,7 @@ double Process::integrate_phi(const double &theta)
 
     for (double p = 0; p < M_PI; p += 1e-2)
     {
-      // std::cout << "\tp\t" << p << "\t";
+      std::cout << p << "\t" << ptr(p) << "\n";
       MyFile << p << "\t" << ptr(p) << "\n";
     }
 
