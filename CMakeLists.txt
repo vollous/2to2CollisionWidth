@@ -17,8 +17,6 @@ find_library(CUBA_LIB NAMES cuba PATHS /opt/homebrew/lib)
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(GSL REQUIRED)  
 
-
-
 # Ask Python for NumPy include path dynamically
 execute_process(
     COMMAND ${Python3_EXECUTABLE} -c "import numpy; print(numpy.get_include())"
