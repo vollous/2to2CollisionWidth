@@ -133,8 +133,8 @@ struct tLgTOtRH_massless : Process
 
 struct tLgTOtRH_massless_helicity_thermal_masses : Process
 {
-  using Process::Process;           // Import constructor
-  double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+  using Process::Process;                 // Import constructor
+  const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
   double AmplitudeSquared(const std::vector<double> &p1,
                           const std::vector<double> &p2,
                           const std::vector<double> &p3) override
