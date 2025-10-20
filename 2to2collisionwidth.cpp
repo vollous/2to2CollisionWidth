@@ -146,6 +146,19 @@ double Process::ReT1(const double &g,
                      const double &mB,
                      const double &mF)
 {
+  // All possible poles
+  std::vector<double> poles = {
+      (-omega - k) / 2., (-omega + k) / 2., (omega - k) / 2., (omega + k) / 2.};
+  // Sort poles
+  std::sort(poles.begin(), poles.end());
+  // Get only strictly positive
+  std::vector<double> positive_poles;
+  for (auto const &pole : poles)
+    if (pole > 0) positive_poles.push_back(pole);
+
+  // Add 0 at front and some slack at the end
+  positive_poles.insert(positive_poles.begin(), 0.);
+  positive_poles.push_back(positive_poles.back() * 2.);
   auto ptr = [=](const double &p) -> double
   {
     if (p == 0 and mB == 0)
@@ -168,7 +181,7 @@ double Process::ReT1(const double &g,
 
   double result, error;
   if (gsl_integration_qagiu(
-          F, omega + k, 1e-6, 1e-6, 10000, w, &result, &error) != 0)
+          F, positive_poles.back(), 1e-6, 1e-6, 10000, w, &result, &error) != 0)
   {
     std::cout << "Real part of T1 (1))\n";
     std::cout << "error\t" << error << "\n";
@@ -182,24 +195,15 @@ double Process::ReT1(const double &g,
   r += result;
 
   gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
-  size_t np;
-  double *points_ptr;
-  double points_zero[3]{0., (omega + k) / 2., omega + k};
-  double points[4]{0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
-  if (omega == 0 or k == 0)
-  {
-    np         = 3;
-    points_ptr = points_zero;
-  }
-  else
-  {
-    np         = 4;
-    points_ptr = points;
-  }
+
+  // convert std::vector to array
+  size_t np = positive_poles.size();
+  double points[np];
+  std::copy(positive_poles.begin(), positive_poles.end(), points);
 
   double result1, error1;
   if (gsl_integration_qagp(
-          F, points_ptr, np, 1e-6, 1e-6, 10000, w1, &result1, &error1) != 0)
+          F, points, np, 1e-6, 1e-6, 10000, w1, &result1, &error1) != 0)
   {
     std::cout << "Real part of T1 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
@@ -326,6 +330,19 @@ double Process::ReT2(const double &g,
                      const double &mB,
                      const double &mF)
 {
+  // All possible poles
+  std::vector<double> poles = {
+      (-omega - k) / 2., (-omega + k) / 2., (omega - k) / 2., (omega + k) / 2.};
+  // Sort poles
+  std::sort(poles.begin(), poles.end());
+  // Get only strictly positive
+  std::vector<double> positive_poles;
+  for (auto const &pole : poles)
+    if (pole > 0) positive_poles.push_back(pole);
+
+  // Add 0 at front and some slack at the end
+  positive_poles.insert(positive_poles.begin(), 0.);
+  positive_poles.push_back(positive_poles.back() * 2.);
   const double fac = (omega * omega - k * k) / (2. * k);
   auto ptr         = [=](const double &p) -> double
   {
@@ -347,7 +364,7 @@ double Process::ReT2(const double &g,
 
   double result, error;
   if (gsl_integration_qagiu(
-          F, omega + k, 1e-6, 1e-6, 10000, w, &result, &error) != 0)
+          F, positive_poles.back(), 1e-6, 1e-6, 10000, w, &result, &error) != 0)
   {
     std::cout << "Real part of T2 (1))\n";
     std::cout << "error\t" << error << "\n";
@@ -361,29 +378,19 @@ double Process::ReT2(const double &g,
   r += result;
   gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
 
-  size_t np;
-  double *points_ptr;
-  double points_zero[3]{0., (omega + k) / 2., omega + k};
-  double points[4]{0., abs(omega - k) / 2., (omega + k) / 2., omega + k};
-  if (omega == 0 or k == 0)
-  {
-    np         = 3;
-    points_ptr = points_zero;
-  }
-  else
-  {
-    np         = 4;
-    points_ptr = points;
-  }
+  // convert std::vector to array
+  size_t np = positive_poles.size();
+  double points[np];
+  std::copy(positive_poles.begin(), positive_poles.end(), points);
 
   double result1, error1;
   if (gsl_integration_qagp(
-          F, points_ptr, np, 1e-6, 1e-6, 10000, w, &result1, &error1) != 0)
+          F, points, np, 1e-6, 1e-6, 10000, w, &result1, &error1) != 0)
   {
     std::cout << "np\t" << np << "\n";
     for (int i = 0; i < sizeof(np); i++)
     {
-      std::cout << ">" << i << "\t" << points_ptr[i] << "\n";
+      std::cout << ">" << i << "\t" << points[i] << "\n";
     }
     std::cout << "Real part of T2 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
