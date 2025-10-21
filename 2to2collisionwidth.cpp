@@ -159,6 +159,9 @@ double Process::ReT1(const double &g,
   // Add 0 at front and some slack at the end
   positive_poles.insert(positive_poles.begin(), 0.);
   positive_poles.push_back(positive_poles.back() * 2.);
+  positive_poles.erase(unique(positive_poles.begin(), positive_poles.end()),
+                       positive_poles.end());
+
   auto ptr = [=](const double &p) -> double
   {
     if (p == 0 and mB == 0)
@@ -206,6 +209,10 @@ double Process::ReT1(const double &g,
           F, points, np, 1e-6, 1e-6, 10000, w1, &result1, &error1) != 0)
   {
     std::cout << "Real part of T1 (2))\n";
+    std::cout << "Poles\t";
+    for (auto const &pole : poles)
+      std::cout << pole << "\t";
+    std::cout << "\n";
     std::cout << "result1\t" << result1 << "\n";
     std::cout << "error1\t" << error1 << "\n";
     std::cout << "omega\t" << omega << "\n";
@@ -344,6 +351,8 @@ double Process::ReT2(const double &g,
   // Add 0 at front and some slack at the end
   positive_poles.insert(positive_poles.begin(), 0.);
   positive_poles.push_back(positive_poles.back() * 2.);
+  positive_poles.erase(unique(positive_poles.begin(), positive_poles.end()),
+                       positive_poles.end());
 
   const double fac = (omega * omega - k * k) / (2. * k);
   auto ptr         = [=](const double &p) -> double
@@ -390,10 +399,18 @@ double Process::ReT2(const double &g,
           F, points, np, 1e-6, 1e-6, 10000, w, &result1, &error1) != 0)
   {
     std::cout << "np\t" << np << "\n";
-    for (int i = 0; i < sizeof(np); i++)
+    for (int i = 0; i < np; i++)
     {
       std::cout << ">" << i << "\t" << points[i] << "\n";
     }
+    std::cout << "\n\n";
+
+    for (double p = positive_poles.front(); p < positive_poles.back();
+         p += (positive_poles.back() - positive_poles.front()) / 100.)
+    {
+      std::cout << p << "\t" << ptr(p) << "\t" << L1(p, omega, k) << "\n";
+    }
+
     std::cout << "Real part of T2 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
     std::cout << "error1\t" << error1 << "\n";
