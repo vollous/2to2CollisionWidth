@@ -572,6 +572,10 @@ void test_ImT2()
 
 void testing()
 {
+
+  std::cout
+      << "\n\t\t\t ------------------ TESTING MODE ------------------\n\n";
+
   test_ReT1();
   test_ImT1();
   test_ReT2();
@@ -680,24 +684,6 @@ int main()
   // tLgTOtRH_massless_helicity_thermal_masses proc(
   //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
-  /*double mA              = 10;
-  double mB              = 30;
-  std::vector<double> pA = {0, 0, 10};
-
-  double phi    = 1.6;
-  float cos_phi = cos(phi);
-  float sin_phi = sin(phi);
-
-  std::vector<double> pB = {10 * cos_phi, 10 * sin_phi, 0};
-
-  std::cout << "Energy A\t" << proc.Energy(mA, pA) << "\t"
-            << proc.Energy(mB, pB) << "\t" << pA * pB << "\n";
-
-  std::cout << proc.MonteCarloInt(
-                   proc.Energy(mA, pA), proc.Energy(mB, pB), pA, pB)
-            << "\t\t<<<<<<<\n\n";
-
-  // exit(0);*/
   //  t-channel with massless HTL. // care very much about helicities
   //  Gamma_y = = 0.00422475 +- 1.73651e-05
   //  Time :17.969  s
@@ -708,21 +694,6 @@ int main()
   // tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
   // m4);
 
-  /*std::vector<double> p1 = {
-      -2.4319545096067867185, 0.81642954775194209738,
-  -2.168603517231575406}; std::vector<double> p2 = { -2.9883572349034142057,
-  0.7114617547144796994, 4.9419805021096898656}; double theta = M_PI;
-
-  proc.E1_   = proc.Energy(m1, p1);
-  proc.ET_   = proc.Energy(m1, p1) + proc.Energy(m2, p2);
-  proc.p1_   = p1;
-  proc.p2_   = p2;
-  proc.p1p2_ = p1 + p2;
-  proc.p12_  = proc.p1p2_ * proc.p1p2_;
-
-  proc.integrate_phi(theta);
-  exit(0);*/
-
   //  t-channel with massless full propagator. // care very much about
   //  helicities Gamma_y = Time : Gamma_y = Time redux :
   m1 = 0; // mt
@@ -732,7 +703,7 @@ int main()
   tLgTOtRH_massless_helicity_full proc(
       T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
-  /****** useless ******/
+  /****************************** useless *******************************/
 
   // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
   // identity proc(100, 1, s1, s2, s3, s4, 0, 0, 0, 0);
