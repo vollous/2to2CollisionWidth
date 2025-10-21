@@ -207,6 +207,38 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     const double REb = Reb(mtinf, omega, k);
     const double IMb = Imb(mtinf, omega, k);
 
+    const std::complex<double> a(REa, IMa);
+    const std::complex<double> b(REb, IMb);
+
+    const double PropagatorSquared =
+        std::norm((a + 1.) /
+                  (pow(b, 2) + 2. * (a + 1.) * b * omega + pow(a + 1., 2) * t));
+
+    const double res =
+        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
+        (pow(mW, 2) * pow(sW, 2)) * PropagatorSquared;
+
+    if (res < 0)
+    {
+      std::cout << "Negative amplitude sqr? \n";
+      return 0.;
+    }
+    return res;
+  }
+};
+
+
+    // Self energy
+    const double omega = Energy(0, p1) - Energy(0, p3);
+    const double k     = Energy(0, p1 - p3);
+    const double t =
+        -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
+
+    const double REa = Rea(mtinf, omega, k);
+    const double IMa = Ima(mtinf, omega, k);
+    const double REb = Reb(mtinf, omega, k);
+    const double IMb = Imb(mtinf, omega, k);
+
     double res =
         ((2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) *
           (pow(IMa, 2) + pow(1 + REa, 2))) /
