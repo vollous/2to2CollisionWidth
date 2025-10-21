@@ -524,6 +524,8 @@ int main()
   double v = 10;
   double m1, m2, m3, m4;
 
+  std::cout << "Temperature is T = " << T << "\n";
+
   double mt = sqrt(pow(yt * v / sqrt(2.), 2) + pow(gs / sqrt(6.) * T, 2));
   double mg = gs * sqrt(3. / 3. + 3. / 6.) * T;
   double ms = 100;
