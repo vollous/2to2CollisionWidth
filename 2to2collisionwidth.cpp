@@ -228,6 +228,7 @@ double Process::ImT1(const double &g,
                      const double &mF)
 {
   if (abs(omega - k) < 1e-10) return -100.;
+  if (omega < 0) return ImT1(g, C, -omega, k, mB, mF);
 
   double r = 0;
 
@@ -343,6 +344,7 @@ double Process::ReT2(const double &g,
   // Add 0 at front and some slack at the end
   positive_poles.insert(positive_poles.begin(), 0.);
   positive_poles.push_back(positive_poles.back() * 2.);
+
   const double fac = (omega * omega - k * k) / (2. * k);
   auto ptr         = [=](const double &p) -> double
   {
@@ -415,6 +417,7 @@ double Process::ImT2(const double &g,
                      const double &mF)
 {
   if (abs(omega - k) < 1e-10) return 0.;
+  if (omega < 0) return -ImT2(g, C, -omega, k, mB, mF);
 
   gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
 
