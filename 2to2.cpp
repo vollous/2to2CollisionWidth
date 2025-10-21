@@ -166,13 +166,13 @@ struct tLgTOtRH_massless_helicity_HTL : Process
   inline double Rea(const double &m, const double &omega, const double &k)
   {
     const double logomegak = log(abs((omega + k) / (omega - k)));
-    return pow(m, 2) / k * (1 - omega / (2. * k) * logomegak);
+    return pow(m / k, 2) * (1 - omega / (2. * k) * logomegak);
   }
 
   inline double Ima(const double &m, const double &omega, const double &k)
   {
     const double arglog = std::arg((omega + k) / (omega - k));
-    return pow(m, 2) / k * (-omega / (2. * k) * arglog);
+    return pow(m / k, 2) * (-omega / (2. * k) * arglog);
   }
 
   inline double Reb(const double &m, const double &omega, const double &k)
