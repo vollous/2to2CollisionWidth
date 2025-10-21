@@ -509,12 +509,13 @@ void testing()
   test_ImT1();
   test_ReT2();
   test_ImT2();
+
+  exit(0); // Exit early
 }
 
 int main()
 {
-
-  // testing();
+  if (std::getenv("TESTING")) testing();
 
   /*int ncores = 5, pcores = 1e3;
   cubacores(&ncores, &pcores);*/

@@ -26,6 +26,7 @@ extern const int *SPIN;
 #include <chrono>
 #include <cmath>
 #include <complex>
+#include <cstdlib> // for std::getenv
 #include <cuba.h>
 #include <functional>
 #include <gsl/gsl_errno.h>
