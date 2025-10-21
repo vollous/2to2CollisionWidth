@@ -373,7 +373,7 @@ void test_ReT1()
   {
     std::vector<double> x, y;
 
-    for (double omega = 0; omega < 2; omega += 0.011)
+    for (double omega = -2; omega < 2; omega += 0.0011)
     {
       x.push_back(omega);
       y.push_back(proc.ReT1(1, 1, omega, k, 0, 0));
@@ -411,7 +411,7 @@ void test_ImT1()
   {
     std::vector<double> x, y;
 
-    for (double omega = 0; omega < 2; omega += 0.0011)
+    for (double omega = -2; omega < 2; omega += 0.0011)
     {
       x.push_back(omega);
       y.push_back(proc.ImT1(1, 1, omega, k, 0, 0));
@@ -449,7 +449,7 @@ void test_ReT2()
   {
     std::vector<double> x, y;
 
-    for (double omega = 0; omega < 2; omega += 0.011)
+    for (double omega = -2; omega < 2; omega += 0.011)
     {
       x.push_back(omega);
       y.push_back(proc.ReT2(1, 1, omega, k, 0, 0));
@@ -487,7 +487,7 @@ void test_ImT2()
   {
     std::vector<double> x, y;
 
-    for (double omega = 0; omega < 2; omega += 0.001)
+    for (double omega = -2; omega < 2; omega += 0.001)
     {
       x.push_back(omega);
       y.push_back(proc.ImT2(1, 1, omega, k, 0, 0));
