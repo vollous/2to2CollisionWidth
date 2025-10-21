@@ -42,11 +42,13 @@ double Process::integrate_phi(const double &theta)
 
     std::ofstream MyFile("filename.tsv");
 
-    for (double p = 0; p < M_PI; p += 1e-2)
+    for (double p = 0; p < M_PI; p += 1e-5)
     {
-      std::cout << p << "\t" << ptr(p) << "\n";
-      MyFile << p << "\t" << ptr(p) << "\n";
+      // std::cout << p << "\t" << ptr(p) << "\n";
+      MyFile << std::setprecision(10) << p << "\t" << ptr(p) << "\n";
     }
+    // std::cout << M_PI << "\t" << ptr(M_PI) << "\n";
+    MyFile << M_PI << "\t" << ptr(M_PI) << "\n";
 
     MyFile.close();
 
