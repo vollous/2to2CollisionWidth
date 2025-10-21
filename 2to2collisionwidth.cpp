@@ -16,7 +16,7 @@ void my_gsl_error_handler(const char *reason,
 
 double Process::integrate_phi(const double &theta)
 {
-  gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(100000);
 
   gsl_set_error_handler(&my_gsl_error_handler);
 
@@ -31,7 +31,7 @@ double Process::integrate_phi(const double &theta)
                           M_PI,
                           1e-2,
                           1e-2,
-                          10000,
+                          100000,
                           GSL_INTEG_GAUSS61,
                           w,
                           &result,
