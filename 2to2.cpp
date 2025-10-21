@@ -227,6 +227,50 @@ struct tLgTOtRH_massless_helicity_HTL : Process
   }
 };
 
+struct tLgTOtRH_massless_helicity_full : Process
+{
+  using Process::Process;                 // Import constructor
+  const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+  const double C     = 4. / 3.;
+  // Calculation of "a" and "b"
+
+  inline double Rea(const double &m, const double &omega, const double &k)
+  {
+    const double T1 = ReT1(gs, C, omega, k, 0, 0);
+    const double T2 = ReT2(gs, C, omega, k, 0, 0);
+    return T1 / pow(k, 2) - (omega * T2) / pow(k, 2);
+  }
+
+  inline double Ima(const double &m, const double &omega, const double &k)
+  {
+    const double T1 = ImT1(gs, C, omega, k, 0, 0);
+    const double T2 = ImT2(gs, C, omega, k, 0, 0);
+    return T1 / pow(k, 2) - (omega * T2) / pow(k, 2);
+  }
+
+  inline double Reb(const double &m, const double &omega, const double &k)
+  {
+    const double T1 = ReT1(gs, C, omega, k, 0, 0);
+    const double T2 = ReT2(gs, C, omega, k, 0, 0);
+    return -((omega * T1) / pow(k, 2)) -
+           ((pow(k, 2) - pow(omega, 2)) * T2) / pow(k, 2);
+  }
+
+  inline double Imb(const double &m, const double &omega, const double &k)
+  {
+    const double T1 = ImT1(gs, C, omega, k, 0, 0);
+    const double T2 = ImT2(gs, C, omega, k, 0, 0);
+    return -((omega * T1) / pow(k, 2)) -
+           ((pow(k, 2) - pow(omega, 2)) * T2) / pow(k, 2);
+  }
+
+  double AmplitudeSquared(const std::vector<double> &p1,
+                          const std::vector<double> &p2,
+                          const std::vector<double> &p3) override
+  {
+
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
 
     // Self energy
     const double omega = Energy(0, p1) - Energy(0, p3);
@@ -239,25 +283,16 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     const double REb = Reb(mtinf, omega, k);
     const double IMb = Imb(mtinf, omega, k);
 
-    double res =
-        ((2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) *
-          (pow(IMa, 2) + pow(1 + REa, 2))) /
-         (pow(mW, 2) * pow(sW, 2) *
-          (pow(IMb, 4) + 4 * IMa * pow(IMb, 3) * omega +
-           4 * omega * (1 + REa) * pow(REb, 3) + pow(REb, 4) +
-           4 * omega * (1 + REa) * (pow(IMa, 2) + pow(1 + REa, 2)) * REb * t +
-           pow(pow(IMa, 2) + pow(1 + REa, 2), 2) * pow(t, 2) +
-           2 * pow(IMb, 2) *
-               (2 * pow(omega, 2) * (pow(IMa, 2) + pow(1 + REa, 2)) +
-                2 * omega * (1 + REa) * REb + pow(REb, 2) +
-                (pow(IMa, 2) - pow(1 + REa, 2)) * t) +
-           2 * pow(REb, 2) *
-               (2 * pow(omega, 2) * (pow(IMa, 2) + pow(1 + REa, 2)) +
-                (-pow(IMa, 2) + pow(1 + REa, 2)) * t) +
-           4 * IMa * IMb *
-               (omega * pow(REb, 2) +
-                omega * (pow(IMa, 2) + pow(1 + REa, 2)) * t +
-                2 * (1 + REa) * REb * t))));
+    const std::complex<double> a(REa, IMa);
+    const std::complex<double> b(REb, IMb);
+
+    const double PropagatorSquared =
+        std::norm((a + 1.) /
+                  (pow(b, 2) + 2. * (a + 1.) * b * omega + pow(a + 1., 2) * t));
+
+    const double res =
+        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
+        (pow(mW, 2) * pow(sW, 2)) * PropagatorSquared;
 
     if (res < 0)
     {
@@ -664,21 +699,19 @@ int main()
 
   // exit(0);*/
   //  t-channel with massless HTL. // care very much about helicities
-  //  Gamma_y =
-  //  Time :
-  //  Gamma_y =
-  //  Time redux :
+  //  Gamma_y = = 0.00422475 +- 1.73651e-05
+  //  Time :17.969  s
   m1 = 0; // mt
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  // tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
+  // m4);
 
   /*std::vector<double> p1 = {
-      -2.4319545096067867185, 0.81642954775194209738, -2.168603517231575406};
-  std::vector<double> p2 = {
-      -2.9883572349034142057, 0.7114617547144796994, 4.9419805021096898656};
-  double theta = M_PI;
+      -2.4319545096067867185, 0.81642954775194209738,
+  -2.168603517231575406}; std::vector<double> p2 = { -2.9883572349034142057,
+  0.7114617547144796994, 4.9419805021096898656}; double theta = M_PI;
 
   proc.E1_   = proc.Energy(m1, p1);
   proc.ET_   = proc.Energy(m1, p1) + proc.Energy(m2, p2);
@@ -689,6 +722,16 @@ int main()
 
   proc.integrate_phi(theta);
   exit(0);*/
+
+  //  t-channel with massless full propagator. // care very much about
+  //  helicities Gamma_y = Time : Gamma_y = Time redux :
+  m1 = 0; // mt
+  m2 = 0; // mg
+  m3 = 0; // ms
+  m4 = 0; // mt
+  tLgTOtRH_massless_helicity_full proc(
+      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
   /****** useless ******/
 
   // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
