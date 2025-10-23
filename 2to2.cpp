@@ -623,19 +623,7 @@ int main()
         &                \
        &                  \
       g                    t_R
-
-    t_L     h
-     \     /
-      \   /
-       \ /
-        |
-        |
-        |
-       & \
-      &   \
-     &     \
-    g       t_R
-  */
+*/
 
   // Complete process. No approximations
   // Time : 8.824 s
