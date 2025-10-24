@@ -111,7 +111,7 @@ double Process::Integrate(const double &E1,
                       1e-2,
                       1e-2,
                       10000,
-                      GSL_INTEG_GAUSS61,
+                      GSL_INTEG_GAUSS21,
                       w,
                       &result,
                       &error);
