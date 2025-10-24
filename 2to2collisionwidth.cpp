@@ -22,6 +22,7 @@ double Process::integrate_phi(const double &theta)
 
   auto ptr = [=](const double &phi) -> double
   { return integrand_theta_phi(theta, phi); };
+
   gsl_function_pp<decltype(ptr)> Fp(ptr);
   const gsl_function *F = static_cast<gsl_function *>(&Fp);
 
@@ -29,15 +30,16 @@ double Process::integrate_phi(const double &theta)
   if (gsl_integration_qag(F,
                           0,
                           M_PI,
-                          1e-2,
-                          1e-2,
+                          1e-4,
+                          1e-4,
                           100000,
-                          GSL_INTEG_GAUSS61,
+                          GSL_INTEG_GAUSS41,
                           w,
                           &result,
                           &error) != 0)
 
   {
+    /*
     std::cout << "-- Integrate phi --\n";
 
     std::ofstream MyFile("filename.tsv");
@@ -68,7 +70,7 @@ double Process::integrate_phi(const double &theta)
 
     std::cout << "\nE1 + E2\t" << ET_ << "\n";
     std::cout << "Minimum Energy\t" << (ET_ - Energy(m3 + m4, p1p2_)) << "\n";
-    exit(0);
+    // exit(0);*/
   }
   gsl_integration_workspace_free(w);
   return result;
