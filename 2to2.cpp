@@ -34,6 +34,10 @@ const int *SPIN       = NULL;
 #define LDXGIVEN NDIM
 #define NEXTRA 0
 using namespace TwoToTwoCollisionWidth;
+using std::chrono::duration;
+using std::chrono::duration_cast;
+using std::chrono::high_resolution_clock;
+using std::chrono::milliseconds;
 namespace plt = matplotlibcpp;
 struct tLgTOtRH : Process
 {
@@ -429,13 +433,25 @@ void test_ReT1()
   for (double k : {0.5, 1.0, 1.5})
   {
     std::vector<double> x, y;
-
-    for (double omega = -2; omega < 2; omega += 0.0011)
+    auto tt1       = high_resolution_clock::now();
+    double maxtime = -1;
+    for (double i = -6; i <= MAX_OMEGA_PLOL_EXP; i += 0.0001)
     {
+      double omega = pow(10, i);
       x.push_back(omega);
-      y.push_back(proc.ReT1(1, 1, omega, k, 0, 0));
+      auto t1                                = high_resolution_clock::now();
+      double val                             = proc.ReT1(1, 1, omega, k, 0, 0);
+      auto t2                                = high_resolution_clock::now();
+      duration<double, std::milli> ms_double = t2 - t1;
+      maxtime = std::max(maxtime, ms_double.count());
+      // std::cout << "Re(T1, k = " << k << ", omega = " << omega
+      //           << ") took around " << ms_double.count() / 1000. << "s\n";
+      y.push_back(val);
     }
-
+    auto tt2                               = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = tt2 - tt1;
+    std::cout << "Re(T1, k = " << k << ") took around " << ms_double.count()
+              << " ms.\t Max evaluation = " << maxtime << " ms.\n";
     plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
   }
   plt::xlabel("$\\omega$");
@@ -467,13 +483,25 @@ void test_ImT1()
   for (double k : {0.5, 1.0, 1.5})
   {
     std::vector<double> x, y;
-
-    for (double omega = -2; omega < 2; omega += 0.0011)
+    auto tt1       = high_resolution_clock::now();
+    double maxtime = -1;
+    for (double i = -6; i <= MAX_OMEGA_PLOL_EXP; i += 0.00011)
     {
+      double omega = pow(10, i);
       x.push_back(omega);
-      y.push_back(proc.ImT1(1, 1, omega, k, 0, 0));
+      auto t1                                = high_resolution_clock::now();
+      double val                             = proc.ImT1(1, 1, omega, k, 0, 0);
+      auto t2                                = high_resolution_clock::now();
+      duration<double, std::milli> ms_double = t2 - t1;
+      maxtime = std::max(maxtime, ms_double.count());
+      // std::cout << "Im(T1, k = " << k << ", omega = " << omega
+      //           << ") took around " << ms_double.count() / 1000. << "s\n";
+      y.push_back(val);
     }
-
+    auto tt2                               = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = tt2 - tt1;
+    std::cout << "Im(T1, k = " << k << ") took around " << ms_double.count()
+              << " ms.\t Max evaluation = " << maxtime << " ms.\n";
     plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
   }
   plt::xlabel("$\\omega$");
@@ -505,13 +533,25 @@ void test_ReT2()
   for (double k : {0.5, 1.0, 1.5})
   {
     std::vector<double> x, y;
-
-    for (double omega = -2; omega < 2; omega += 0.011)
+    auto tt1       = high_resolution_clock::now();
+    double maxtime = -1;
+    for (double i = -6; i <= MAX_OMEGA_PLOL_EXP; i += 0.0001)
     {
+      double omega = pow(10, i);
       x.push_back(omega);
-      y.push_back(proc.ReT2(1, 1, omega, k, 0, 0));
+      auto t1                                = high_resolution_clock::now();
+      double val                             = proc.ReT2(1, 1, omega, k, 0, 0);
+      auto t2                                = high_resolution_clock::now();
+      duration<double, std::milli> ms_double = t2 - t1;
+      maxtime = std::max(maxtime, ms_double.count());
+      // std::cout << "Re(T2, k = " << k << ", omega = " << omega
+      //           << ") took around " << ms_double.count() / 1000. << "s\n";
+      y.push_back(val);
     }
-
+    auto tt2                               = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = tt2 - tt1;
+    std::cout << "Re(T2, k = " << k << ") took around " << ms_double.count()
+              << " ms.\t Max evaluation = " << maxtime << " ms.\n";
     plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
   }
   plt::xlabel("$\\omega$");
@@ -543,16 +583,27 @@ void test_ImT2()
   for (double k : {0.5, 1.0, 1.5})
   {
     std::vector<double> x, y;
-
-    for (double omega = -2; omega < 2; omega += 0.001)
+    auto tt1       = high_resolution_clock::now();
+    double maxtime = -1;
+    for (double i = -6; i <= MAX_OMEGA_PLOL_EXP; i += 0.0001)
     {
+      double omega = pow(10, i);
       x.push_back(omega);
-      y.push_back(proc.ImT2(1, 1, omega, k, 0, 0));
+      auto t1                                = high_resolution_clock::now();
+      double val                             = proc.ImT2(1, 1, omega, k, 0, 0);
+      auto t2                                = high_resolution_clock::now();
+      duration<double, std::milli> ms_double = t2 - t1;
+      maxtime = std::max(maxtime, ms_double.count());
+      // std::cout << "Im(T2, k = " << k << ", omega = " << omega
+      //           << ") took around " << ms_double.count() / 1000. << "s\n";
+      y.push_back(val);
     }
-
+    auto tt2                               = high_resolution_clock::now();
+    duration<double, std::milli> ms_double = tt2 - tt1;
+    std::cout << "Im(T2, k = " << k << ") took around " << ms_double.count()
+              << " ms.\t Max evaluation = " << maxtime << " ms.\n";
     plt::plot(x, y, {{"label", "k=" + std::to_string(k)}});
   }
-
   plt::xlabel("$\\omega$");
   plt::ylabel("$\\Im(T_2)$");
   plt::legend();
@@ -567,9 +618,13 @@ void testing()
       << "\n\t\t\t ------------------ TESTING MODE ------------------\n\n";
 
   test_ReT1();
-  test_ImT1();
+  std::cout << "\n";
+  test_ImT1(); // No problem
+  std::cout << "\n";
   test_ReT2();
-  test_ImT2();
+  std::cout << "\n";
+  test_ImT2(); // No problem
+  std::cout << "\n";
 
   exit(0); // Exit early
 }
