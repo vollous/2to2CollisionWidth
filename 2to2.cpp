@@ -234,34 +234,26 @@ struct tLgTOtRH_massless_helicity_full : Process
   const double C     = 4. / 3.;
   // Calculation of "a" and "b"
 
-  inline double Rea(const double &m, const double &omega, const double &k)
+  inline void Calculate_a_b(const double &m,
+                            const double &omega,
+                            const double &k,
+                            double &REa,
+                            double &IMa,
+                            double &REb,
+                            double &IMb)
   {
-    const double T1 = ReT1(gs, C, omega, k, 0, 0);
-    const double T2 = ReT2(gs, C, omega, k, 0, 0);
-    return T1 / pow(k, 2) - (omega * T2) / pow(k, 2);
-  }
+    const double rT1 = ReT1(gs, C, omega, k, 0, 0);
+    const double rT2 = ReT2(gs, C, omega, k, 0, 0);
+    const double iT1 = ImT1(gs, C, omega, k, 0, 0);
+    const double iT2 = ImT2(gs, C, omega, k, 0, 0);
 
-  inline double Ima(const double &m, const double &omega, const double &k)
-  {
-    const double T1 = ImT1(gs, C, omega, k, 0, 0);
-    const double T2 = ImT2(gs, C, omega, k, 0, 0);
-    return T1 / pow(k, 2) - (omega * T2) / pow(k, 2);
-  }
-
-  inline double Reb(const double &m, const double &omega, const double &k)
-  {
-    const double T1 = ReT1(gs, C, omega, k, 0, 0);
-    const double T2 = ReT2(gs, C, omega, k, 0, 0);
-    return -((omega * T1) / pow(k, 2)) -
-           ((pow(k, 2) - pow(omega, 2)) * T2) / pow(k, 2);
-  }
-
-  inline double Imb(const double &m, const double &omega, const double &k)
-  {
-    const double T1 = ImT1(gs, C, omega, k, 0, 0);
-    const double T2 = ImT2(gs, C, omega, k, 0, 0);
-    return -((omega * T1) / pow(k, 2)) -
-           ((pow(k, 2) - pow(omega, 2)) * T2) / pow(k, 2);
+    REa = rT1 / pow(k, 2) - (omega * rT2) / pow(k, 2);
+    IMa = iT1 / pow(k, 2) - (omega * iT2) / pow(k, 2);
+    REb = -((omega * rT1) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * rT2) / pow(k, 2);
+    IMb = -((omega * iT1) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * iT2) / pow(k, 2);
+    return;
   }
 
   double AmplitudeSquared(const std::vector<double> &p1,
@@ -278,10 +270,8 @@ struct tLgTOtRH_massless_helicity_full : Process
     const double t =
         -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
 
-    const double REa = Rea(mtinf, omega, k);
-    const double IMa = Ima(mtinf, omega, k);
-    const double REb = Reb(mtinf, omega, k);
-    const double IMb = Imb(mtinf, omega, k);
+    double REa, IMa, REb, IMb;
+    Calculate_a_b(mtinf, omega, k, REa, IMa, REb, IMb);
 
     const std::complex<double> a(REa, IMa);
     const std::complex<double> b(REb, IMb);
