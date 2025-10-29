@@ -33,6 +33,7 @@ const int *SPIN       = NULL;
 #define NGIVEN 0
 #define LDXGIVEN NDIM
 #define NEXTRA 0
+using namespace boost::math::interpolators;
 using namespace TwoToTwoCollisionWidth;
 using std::chrono::duration;
 using std::chrono::duration_cast;
@@ -236,6 +237,335 @@ struct tLgTOtRH_massless_helicity_full : Process
   using Process::Process;                 // Import constructor
   const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
   const double C     = 4. / 3.;
+
+  std::function<double(double, double)> ReT1_rasterized;
+  std::function<double(double, double)> ImT1_rasterized;
+  std::function<double(double, double)> ReT2_rasterized;
+  std::function<double(double, double)> ImT2_rasterized;
+
+  inline std::function<double(double, double)>
+  to_bilinear(const ODDNESS &oddness,
+              const int &n1,
+              const int &n2,
+              const std::function<double(double)> &u,
+              const std::function<double(double)> &v,
+              const std::function<double(double, double)> &norm,
+              const double &f_0_0,
+              const std::function<double(double)> &f_v1_0,
+              const double &f_inf_0,
+              const std::function<double(double)> &f_0_v2,
+              const std::function<double(double, double)> &f_v1_v2,
+              const std::function<double(double)> &f_inf_v2,
+              const double &f_0_inf,
+              const std::function<double(double)> &f_v1_inf,
+              const double &f_inf_inf)
+  {
+    if (u(v(M_PI)) / M_PI - 1 > 1e-6 or v(u(M_PI)) / M_PI - 1 > 1e-6)
+      std::cout << "Error with u to v converter\n";
+
+    if (n1 == n2)
+      std::cout << "n1 = n2. Might be dangerous for some functions!";
+
+    const double d1 = 1. / (n1 - 1.);
+    const double d2 = 1. / (n2 - 1.);
+
+    std::vector<double> vv;
+    vv.push_back(f_0_0);
+    for (double d_1 = d1; d_1 < 1 - d1 / 2.; d_1 += d1)
+      vv.push_back(f_v1_0(v(d_1)));
+    vv.push_back(f_inf_0);
+
+    if (vv.size() != n1)
+      std::cout << "Bad size at n1." << vv.size() << "\t" << n1 << "\n";
+
+    for (double d_2 = d2; d_2 < 1 - d2 / 2.; d_2 += d2)
+    {
+      vv.push_back(f_0_v2(v(d_2)));
+      for (double d_1 = d1; d_1 < 1 - d1 / 2.; d_1 += d1)
+        vv.push_back(f_v1_v2(v(d_1), v(d_2)));
+      vv.push_back(f_inf_v2(v(d_2)));
+    }
+
+    if (vv.size() != n1 * (n2 - 1))
+      std::cout << "Bad size at n1.\t\t\t" << vv.size() << "\t" << n1 * (n2 - 1)
+                << "\n";
+    vv.push_back(f_0_inf);
+    for (double d_1 = d1; d_1 < 1 - d1 / 2.; d_1 += d1)
+    {
+      // std::cout << "d_1\t" << d_1 << "\t" << v(d_1) << "\n";
+      vv.push_back(f_v1_inf(v(d_1)));
+    }
+
+    vv.push_back(f_inf_inf);
+
+    for (auto value : vv)
+      if (isnan(value)) std::cout << "NaN value found\n";
+
+    auto bu = bilinear_uniform(std::move(vv), n2, n1, d1, d2);
+    std::function<double(double, double)> r;
+    if (oddness == ODDNESS::ODD)
+    {
+      r = [=](const double &v1, const double &v2)
+      { return sgn(v1) * bu(u(abs(v1)), u(v2)) / norm(abs(v1), v2); };
+    }
+    else
+    {
+      // even function first argument
+      r = [=](const double &v1, const double &v2)
+      { return bu(u(abs(v1)), u(v2)) / norm(abs(v1), v2); };
+    }
+
+    return r;
+  }
+
+  inline void Generate_Billinear_a_b(double mB = 0, double mF = 0)
+  {
+    // For testing purposes
+    double oo = 10.1;
+    double kk = 1.;
+
+    // Hyper parameters
+    const int n1       = 201;
+    const int n2       = 202;
+    const double s     = T;
+    const double INFTY = 1.e5;
+    const double ZERO  = 1.e-5;
+
+    // var_tilde = s * var / (s * var + 1 )
+    // var = var_tilde * (s - s var_tilde )
+    std::function<double(double)> u = [=](const double &var)
+    { return s * var / (1. + s * var); };
+    std::function<double(double)> v = [=](const double &tilde)
+    { return tilde / (1. - tilde) / s; };
+
+    /*************************** ReT1 ***************************/
+
+    std::function<double(double, double)> norm_ret1 =
+        [=](const double &omega, const double &k)
+
+    { return (omega - k + mF) / (omega + k + 1); };
+    const double ret1_0_0                            = 0;
+    const std::function<double(double)> ret1_omega_0 = [=](const double &omega)
+    { return norm_ret1(omega, ZERO) * ReT1(gs, C, omega, ZERO, mB, mF); };
+
+    const double ret1_inf_0 =
+        norm_ret1(INFTY, ZERO) * ReT1(gs, C, INFTY, ZERO, mB, mF);
+
+    const std::function<double(double)> ret1_0_k = [=](const double &k)
+    { return norm_ret1(ZERO, k) * ReT1(gs, C, ZERO, k, mB, mF); };
+    const std::function<double(double, double)> ret1_omega_k =
+        [=](const double &omega, const double &k)
+    { return norm_ret1(omega, k) * ReT1(gs, C, omega, k, mB, mF); };
+    const std::function<double(double)> ret1_inf_k = [=](const double &k)
+    { return norm_ret1(INFTY, k) * ReT1(gs, C, INFTY, k, mB, mF); };
+
+    const double ret1_0_inf =
+        norm_ret1(ZERO, INFTY) * ReT1(gs, C, ZERO, INFTY, mB, mF);
+    const std::function<double(double)> ret1_omega_inf =
+        [=](const double &omega)
+    { return norm_ret1(omega, INFTY) * ReT1(gs, C, omega, INFTY, mB, mF); };
+    const double ret1_inf_inf =
+        norm_ret1(INFTY, INFTY + 1) * ReT1(gs, C, INFTY, INFTY + 1, mB, mF);
+
+    ReT1_rasterized = to_bilinear(ODDNESS::ODD,
+                                  n1,
+                                  n2,
+                                  u,
+                                  v,
+                                  norm_ret1,
+                                  ret1_0_0,
+                                  ret1_omega_0,
+                                  ret1_inf_0,
+                                  ret1_0_k,
+                                  ret1_omega_k,
+                                  ret1_inf_k,
+                                  ret1_0_inf,
+                                  ret1_omega_inf,
+                                  ret1_inf_inf);
+
+    std::cout << "ReT1_rasterized\t"
+              << ReT1_rasterized(oo, kk) / ReT1(gs, C, oo, kk, mB, mF) - 1
+              << "\n";
+
+    /*************************** ImT1 ***************************/
+
+    std::function<double(double, double)> norm_imt1 =
+        [=](const double &omega, const double &k)
+    { return k * (omega - k + mF) / (omega + k + 1); };
+
+    const double imt1_0_0                            = 0;
+    const std::function<double(double)> imt1_omega_0 = [=](const double &omega)
+    { return norm_imt1(omega, ZERO) * ImT1(gs, C, omega, ZERO, mB, mF); };
+    const double imt1_inf_0 = 0;
+
+    const std::function<double(double)> imt1_0_k = [=](const double &k)
+    {
+      return (
+          (pow(k, 2) * T *
+           (-(sqrt(pow(k, 2) + 4 * pow(mB, 2)) *
+              log(1 - exp(-0.5 * sqrt(pow(k, 2) + 4 * pow(mB, 2)) / T))) +
+            sqrt(pow(k, 2) + 4 * pow(mF, 2)) *
+                log(1 + exp(-0.5 * sqrt(pow(k, 2) + 4 * pow(mF, 2)) / T)) +
+            2 * T *
+                Polylog(2, exp(-0.5 * sqrt(pow(k, 2) + 4 * pow(mB, 2)) / T)) -
+            2 * T *
+                Polylog(2,
+                        -exp(-0.5 * sqrt(pow(k, 2) + 4 * pow(mF, 2)) / T)))) /
+          (1 + k));
+    };
+    const std::function<double(double, double)> imt1_omega_k =
+        [=](const double &omega, const double &k)
+    { return norm_imt1(omega, k) * ImT1(gs, C, omega, k, mB, mF); };
+    const std::function<double(double)> imt1_inf_k = [=](const double &k)
+    { return 0; };
+
+    const double imt1_0_inf = 0;
+    const std::function<double(double)> imt1_omega_inf =
+        [=](const double &omega) { return 0; };
+    const double imt1_inf_inf = 0;
+
+    ImT1_rasterized = to_bilinear(ODDNESS::EVEN,
+                                  n1,
+                                  n2,
+                                  u,
+                                  v,
+                                  norm_imt1,
+                                  imt1_0_0,
+                                  imt1_omega_0,
+                                  imt1_inf_0,
+                                  imt1_0_k,
+                                  imt1_omega_k,
+                                  imt1_inf_k,
+                                  imt1_0_inf,
+                                  imt1_omega_inf,
+                                  imt1_inf_inf);
+
+    std::cout << "ImT1_rasterized\t"
+              << ImT1_rasterized(oo, kk) / ImT1(gs, C, oo, kk, mB, mF) - 1
+              << "\n";
+
+    /*************************** ReT2 ***************************/
+
+    std::function<double(double, double)> norm_ret2 =
+        [=](const double &omega, const double &k) { return 1; };
+    const double ret2_0_0                            = 0;
+    const std::function<double(double)> ret2_omega_0 = [=](const double &omega)
+    { return norm_ret2(omega, ZERO) * ReT2(gs, C, omega, ZERO, mB, mF); };
+
+    const double ret2_inf_0 =
+        norm_ret2(INFTY, ZERO) * ReT2(gs, C, INFTY, ZERO, mB, mF);
+
+    const std::function<double(double)> ret2_0_k = [=](const double &k)
+    { return norm_ret2(ZERO, k) * ReT2(gs, C, ZERO, k, mB, mF); };
+    const std::function<double(double, double)> ret2_omega_k =
+        [=](const double &omega, const double &k)
+    { return norm_ret2(omega, k) * ReT2(gs, C, omega, k, mB, mF); };
+    const std::function<double(double)> ret2_inf_k = [=](const double &k)
+    { return norm_ret2(INFTY, k) * ReT2(gs, C, INFTY, k, mB, mF); };
+
+    const double ret2_0_inf =
+        norm_ret2(ZERO, INFTY) * ReT2(gs, C, ZERO, INFTY, mB, mF);
+    const std::function<double(double)> ret2_omega_inf =
+        [=](const double &omega)
+    { return norm_ret2(omega, INFTY) * ReT2(gs, C, omega, INFTY, mB, mF); };
+    const double ret2_inf_inf = 0;
+
+    ReT2_rasterized = to_bilinear(ODDNESS::EVEN,
+                                  n1,
+                                  n2,
+                                  u,
+                                  v,
+                                  norm_ret2,
+                                  ret2_0_0,
+                                  ret2_omega_0,
+                                  ret2_inf_0,
+                                  ret2_0_k,
+                                  ret2_omega_k,
+                                  ret2_inf_k,
+                                  ret2_0_inf,
+                                  ret2_omega_inf,
+                                  ret2_inf_inf);
+
+    std::cout << "ReT2_rasterized\t"
+              << ReT2_rasterized(oo, kk) / ReT2(gs, C, oo, kk, mB, mF) - 1
+              << "\n";
+
+    /*************************** ImT2 ***************************/
+
+    std::function<double(double, double)> norm_imt2 =
+        [=](const double &omega, const double &k)
+
+    { return (omega - k + mF) / (omega + k + 1); };
+    const double imt2_0_0                            = 0;
+    const std::function<double(double)> imt2_omega_0 = [=](const double &omega)
+    { return norm_imt2(omega, ZERO) * ImT2(gs, C, omega, ZERO, mB, mF); };
+
+    const double imt2_inf_0 =
+        norm_imt2(INFTY, ZERO) * ImT2(gs, C, INFTY, ZERO, mB, mF);
+
+    const std::function<double(double)> imt2_0_k = [=](const double &k)
+    { return norm_imt2(ZERO, k) * ImT2(gs, C, ZERO, k, mB, mF); };
+    const std::function<double(double, double)> imt2_omega_k =
+        [=](const double &omega, const double &k)
+    { return norm_imt2(omega, k) * ImT2(gs, C, omega, k, mB, mF); };
+    const std::function<double(double)> imt2_inf_k = [=](const double &k)
+    { return norm_imt2(INFTY, k) * ImT2(gs, C, INFTY, k, mB, mF); };
+
+    const double imt2_0_inf =
+        norm_imt2(ZERO, INFTY) * ImT2(gs, C, ZERO, INFTY, mB, mF);
+    const std::function<double(double)> imt2_omega_inf =
+        [=](const double &omega)
+    { return norm_imt2(omega, INFTY) * ImT2(gs, C, omega, INFTY, mB, mF); };
+    const double imt2_inf_inf =
+        norm_imt2(INFTY, INFTY + 1) * ImT2(gs, C, INFTY, INFTY + 1, mB, mF);
+
+    ImT2_rasterized = to_bilinear(ODDNESS::ODD,
+                                  n1,
+                                  n2,
+                                  u,
+                                  v,
+                                  norm_imt2,
+                                  imt2_0_0,
+                                  imt2_omega_0,
+                                  imt2_inf_0,
+                                  imt2_0_k,
+                                  imt2_omega_k,
+                                  imt2_inf_k,
+                                  imt2_0_inf,
+                                  imt2_omega_inf,
+                                  imt2_inf_inf);
+
+    std::cout << "ImT2_rasterized\t"
+              << ImT2_rasterized(oo, kk) / ImT2(gs, C, oo, kk, mB, mF) - 1
+              << "\n";
+
+    // rasterized_rasterized exit(0);
+  }
+
+  tLgTOtRH_massless_helicity_full(const double &T_in,
+                                  const double &prefactor_in,
+                                  const int &s1_in,
+                                  const int &s2_in,
+                                  const int &s3_in,
+                                  const int &s4_in,
+                                  const double &m1_in,
+                                  const double &m2_in,
+                                  const double &m3_in,
+                                  const double &m4_in)
+      : Process(T_in,
+                prefactor_in,
+                s1_in,
+                s2_in,
+                s3_in,
+                s4_in,
+                m1_in,
+                m2_in,
+                m3_in,
+                m4_in)
+  {
+    Generate_Billinear_a_b();
+  };
+
   // Calculation of "a" and "b"
 
   inline void Calculate_a_b(const double &m,
@@ -246,10 +576,15 @@ struct tLgTOtRH_massless_helicity_full : Process
                             double &REb,
                             double &IMb)
   {
-    const double rT1 = ReT1(gs, C, omega, k, 0, 0);
+    /*const double rT1 = ReT1(gs, C, omega, k, 0, 0);
     const double rT2 = ReT2(gs, C, omega, k, 0, 0);
     const double iT1 = ImT1(gs, C, omega, k, 0, 0);
-    const double iT2 = ImT2(gs, C, omega, k, 0, 0);
+    const double iT2 = ImT2(gs, C, omega, k, 0, 0);*/
+
+    const double rT1 = ReT1_rasterized(omega, k);
+    const double rT2 = ReT2_rasterized(omega, k);
+    const double iT1 = ImT1_rasterized(omega, k);
+    const double iT2 = ImT2_rasterized(omega, k);
 
     REa = rT1 / pow(k, 2) - (omega * rT2) / pow(k, 2);
     IMa = iT1 / pow(k, 2) - (omega * iT2) / pow(k, 2);
