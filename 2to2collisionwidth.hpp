@@ -191,9 +191,9 @@ private:
 struct Process
 {
 
-  std::vector<double> p1p2_;
-  std::vector<double> p1_, p2_;
-  double E1_, ET_, p12_;
+  std::vector<double> p1p2_, p1p3_;
+  std::vector<double> p1_, p2_, p3_;
+  double E1_, ET_, ED_, p12_, p13_;
   const int s1, s2, s3, s4;
   const double m1, m2, m3, m4, T, prefactor;
 
@@ -336,10 +336,10 @@ struct Process
    * @param p2 momentum of particle 2
    * @return double
    */
-  double MonteCarloInt(const double &E1,
-                       const double &E2,
-                       const std::vector<double> p1,
-                       const std::vector<double> p2);
+  double MonteCarloInt_s(const double &E1,
+                         const double &E2,
+                         const std::vector<double> p1,
+                         const std::vector<double> p2);
 
   /**
    * @brief Integrand over theta and phi
@@ -348,13 +348,7 @@ struct Process
    * @param phi z axis angle
    * @return double
    */
-  double integrand_theta_phi(const double &theta, const double &phi);
-
-  static int Integrand(const int *ndim,
-                       const cubareal xx[],
-                       const int *ncomp,
-                       cubareal ff[],
-                       void *userdata);
+  double integrand_theta_phi_s(const double &theta, const double &phi);
 
   /**
    * @brief Integrates over phi for a given theta
@@ -362,7 +356,7 @@ struct Process
    * @param theta
    * @return double
    */
-  double integrate_phi(const double &theta);
+  double integrate_phi_s(const double &theta);
 
   /**
    * @brief
@@ -374,11 +368,57 @@ struct Process
    * @param p1p2 p1p2 = p1 + p2
    * @return double
    */
-  double Integrate(const double &E1,
-                   const double &ET,
-                   const std::vector<double> &p1,
-                   const std::vector<double> &p2,
-                   const std::vector<double> &p1p2);
+  double Integrate_s(const double &E1,
+                     const double &ET,
+                     const std::vector<double> &p1,
+                     const std::vector<double> &p2,
+                     const std::vector<double> &p1p2);
+
+  /**
+   * @brief Integrand over theta and phi
+   *
+   * @param r distance to z axis
+   * @param phi z axis angle
+   * @return double
+   */
+  double integrand_r_theta_t(const double &r, const double &theta);
+
+  /**
+   * @brief Integrates over phi for a given theta
+   *
+   * @param theta
+   * @return double
+   */
+  double integrate_theta_t(const double &theta);
+  /**
+   * @brief Integrates over the outgoing momentum for a given p1 and p2.
+   * Integrates over the out going angles
+   * @param E1 energy of particle 1
+   * @param E3 energy of particle 3
+   * @param p1 momentum of particle 1
+   * @param p3 momentum of particle 3
+   * @return double
+   */
+  double MonteCarloInt_t(const double &E1,
+                         const double &E3,
+                         const std::vector<double> p1,
+                         const std::vector<double> p3);
+
+  /**
+   * @brief
+   *
+   * @param E1 Energy of particle 1
+   * @param ET Energy of particle 1 - Energy of particle 3
+   * @param p1 3-momentum of p1
+   * @param p3 3-momentum of p3
+   * @param p1p3 p1p3 = p1 - p3
+   * @return double
+   */
+  double Integrate_t(const double &E1,
+                     const double &ED,
+                     const std::vector<double> &p1,
+                     const std::vector<double> &p3,
+                     const std::vector<double> &p1p3);
 
   /**
    * @brief Constructor
@@ -416,6 +456,18 @@ struct Process
   virtual double AmplitudeSquared(const std::vector<double> &p1,
                                   const std::vector<double> &p2,
                                   const std::vector<double> &p3) = 0;
+
+  static int Integrand_s(const int *ndim,
+                         const cubareal xx[],
+                         const int *ncomp,
+                         cubareal ff[],
+                         void *userdata);
+
+  static int Integrand_t(const int *ndim,
+                         const cubareal xx[],
+                         const int *ncomp,
+                         cubareal ff[],
+                         void *userdata);
 };
 } // namespace TwoToTwoCollisionWidth
 #endif

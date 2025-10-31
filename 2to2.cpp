@@ -1059,8 +1059,15 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
-  // m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
+  // std::vector<double> p1 = {-10, 5, 1};
+  // std::vector<double> p3 = {10, 5, -2};
+  //  std::cout << "->"
+  //            << proc.MonteCarloInt_t(
+  //                   proc.Energy(m1, p1), proc.Energy(m3, p3), p1, p3)
+  //            << "\n";
+  //   exit(0);
 
   //  t-channel with massless full propagator. // care very much about
   //  helicities Gamma_y = Time : Gamma_y = Time redux :
@@ -1068,8 +1075,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  tLgTOtRH_massless_helicity_full proc(
-      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+          // tLgTOtRH_massless_helicity_full proc(
+          //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****************************** useless *******************************/
 
@@ -1083,14 +1090,14 @@ int main()
   int mode   = 1;
   if (mode == 0)
   {
-    warm_up_vegas(proc.Integrand, proc, 1e3, 20, -1, integral, error, prob);
-    gridded_vegas(proc.Integrand, proc, 1e4, 10, 1, integral, error, prob);
+    warm_up_vegas(proc.Integrand_t, proc, 1e3, 20, -1, integral, error, prob);
+    gridded_vegas(proc.Integrand_t, proc, 1e4, 10, 1, integral, error, prob);
   }
   else
   {
     Vegas(NDIM,
           NCOMP,
-          proc.Integrand,
+          proc.Integrand_t,
           &proc,
           NVEC,
           EPSREL,
