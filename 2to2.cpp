@@ -739,7 +739,8 @@ void test_ReT1()
   int s3 = 1;
   int s4 = -1;
 
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+
 
   for (double k : {0.5, 1.0, 1.5})
   {
