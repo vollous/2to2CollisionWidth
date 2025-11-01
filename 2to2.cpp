@@ -1001,7 +1001,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  // tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
+  // m4);
 
   // std::vector<double> p1 = {-10, 5, 1};
   // std::vector<double> p3 = {10, 5, -2};
@@ -1017,8 +1018,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-          // tLgTOtRH_massless_helicity_full proc(
-          //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_full proc(
+      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****************************** useless *******************************/
 
