@@ -195,7 +195,8 @@ struct Process
   std::vector<double> p1_, p2_, p3_;
   double E1_, ET_, ED_, p12_, p13_;
   const int s1, s2, s3, s4;
-  const double m1, m2, m3, m4, T, prefactor;
+  const double m1, m2, m3, m4, prefactor;
+  double T;
 
   /**
    * @brief Calculate energy

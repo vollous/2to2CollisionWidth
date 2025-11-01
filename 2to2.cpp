@@ -513,8 +513,7 @@ struct tLgTOtRH_massless_helicity_full : Process
 
   // Calculation of "a" and "b"
 
-  inline void Calculate_a_b(const double &m,
-                            const double &omega,
+  inline void Calculate_a_b(const double &omega,
                             const double &k,
                             double &REa,
                             double &IMa,
@@ -531,12 +530,12 @@ struct tLgTOtRH_massless_helicity_full : Process
     const double iT1 = ImT1_rasterized(omega, k);
     const double iT2 = ImT2_rasterized(omega, k);*/
 
-    REa = rT1 / pow(k, 2) - (omega * rT2) / pow(k, 2);
-    IMa = iT1 / pow(k, 2) - (omega * iT2) / pow(k, 2);
-    REb = -((omega * rT1) / pow(k, 2)) -
-          ((pow(k, 2) - pow(omega, 2)) * rT2) / pow(k, 2);
-    IMb = -((omega * iT1) / pow(k, 2)) -
-          ((pow(k, 2) - pow(omega, 2)) * iT2) / pow(k, 2);
+    REa = rT2 / pow(k, 2) - (omega * rT1) / pow(k, 2);
+    IMa = iT2 / pow(k, 2) - (omega * iT1) / pow(k, 2);
+    REb = -((omega * rT2) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * rT1) / pow(k, 2);
+    IMb = -((omega * iT2) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * iT1) / pow(k, 2);
     return;
   }
 
@@ -562,7 +561,7 @@ struct tLgTOtRH_massless_helicity_full : Process
         -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
 
     double REa, IMa, REb, IMb;
-    Calculate_a_b(mtinf, omega, k, REa, IMa, REb, IMb);
+    Calculate_a_b(omega, k, REa, IMa, REb, IMb);
 
     const std::complex<double> a(REa, IMa);
     const std::complex<double> b(REb, IMb);
