@@ -294,7 +294,7 @@ double Process::ReT1(const double &g,
     exit(0);
   }
   gsl_integration_workspace_free(w);
-  r += result;
+  r = result;
 
   gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
 
@@ -304,21 +304,39 @@ double Process::ReT1(const double &g,
   std::copy(positive_poles.begin(), positive_poles.end(), points);
 
   double result1, error1;
-  if (gsl_integration_qagp(
-          F, points, np, 1e-6, 1e-6, 10000, w1, &result1, &error1) != 0)
+  int gsl_status = gsl_integration_qagp(
+      F, points, np, 1e-6, 1e-6, 10000, w1, &result1, &error1);
+  if (gsl_status != 0)
   {
-    std::cout << "Real part of T1 (2))\n";
-    std::cout << "Poles\t";
-    for (auto const &pole : poles)
-      std::cout << pole << "\t";
-    std::cout << "\n";
-    std::cout << "result1\t" << result1 << "\n";
-    std::cout << "error1\t" << error1 << "\n";
-    std::cout << "omega\t" << omega << "\n";
-    std::cout << "k\t" << k << "\n";
-    std::cout << "omega - k\t" << omega - k << "\n";
-    exit(0);
-    // return 0;
+
+    if (error1 / result1 > 1e-3)
+    {
+      /*
+      std::cout << "error\t\t\t\t" << error1 / result1 << "\n";
+      std::cout << "GSL error: " << gsl_strerror(gsl_status) << "\n";
+      std::cout << "Real part of T1 (2))\n";
+      std::cout << "Poles\t";
+      for (auto const &pole : points)
+        std::cout << pole << "\t";
+      std::cout << "\n";
+      std::ofstream MyFile("ret1.tsv");
+      for (auto p = positive_poles.front(); p < positive_poles.back();
+           p += (positive_poles.back() - positive_poles.front()) / 10000.)
+      {
+        MyFile << std::setprecision(10) << p << "\t" << ptr(p) << "\n";
+      }
+      MyFile.close();
+      std::cout << "result1\t" << result1 << "\n";
+      std::cout << "error1\t" << error1 << "\n";
+      std::cout << "rel\t" << error1 / result1 << "\n";
+      std::cout << "T\t" << T << "\n";
+      std::cout << "omega\t" << omega << "\n";
+      std::cout << "k\t" << k << "\n";
+      std::cout << "omega - k\t" << omega - k << "\n";
+      std::cout << "r = " << r << "\n";
+      // exit(0);
+      //  return 0;*/
+    }
   }
   gsl_integration_workspace_free(w1);
 
@@ -357,8 +375,8 @@ double Process::ImT1(const double &g,
     if (gsl_integration_qag(F,
                             abs(omega - k) / 2.,
                             (omega + k) / 2.,
-                            1e-2,
-                            1e-2,
+                            1e-6,
+                            1e-6,
                             10000,
                             GSL_INTEG_GAUSS61,
                             w,
@@ -393,7 +411,7 @@ double Process::ImT1(const double &g,
 
     double result, error;
     if (gsl_integration_qagiu(
-            F, (omega + k) / 2., 1e-6, 1e-6, 10000, w, &result, &error) != 0)
+            F, (omega + k) / 2., 1e-2, 1e-2, 10000, w, &result, &error) != 0)
     {
       std::cout << "Imaginary part of T1 (2))\n";
       std::cout << "error\t" << error << "\n";
@@ -437,6 +455,7 @@ double Process::ReT2(const double &g,
                      const double &mB,
                      const double &mF)
 {
+  if (abs(omega) < 1e-4) return (g, C, 1e-3, k, mB, mF);
   // All possible poles
   std::vector<double> poles = {
       (-omega - k) / 2., (-omega + k) / 2., (omega - k) / 2., (omega + k) / 2.};
@@ -495,14 +514,15 @@ double Process::ReT2(const double &g,
 
   double result1, error1;
   if (gsl_integration_qagp(
-          F, points, np, 1e-6, 1e-6, 10000, w, &result1, &error1) != 0)
+          F, points, np, 1e-4, 1e-4, 10000, w1, &result1, &error1) != 0)
   {
+    /*std::cout << "Real part of T2 (2))\n";
     std::cout << "np\t" << np << "\n";
     for (int i = 0; i < np; i++)
     {
-      std::cout << ">" << i << "\t" << points[i] << "\n";
+      std::cout << "Poles >" << i << "\t" << points[i] << "\n";
     }
-    std::cout << "\n\n";
+    std::cout << "\n";
 
     for (double p = positive_poles.front(); p < positive_poles.back();
          p += (positive_poles.back() - positive_poles.front()) / 100.)
@@ -510,13 +530,12 @@ double Process::ReT2(const double &g,
       std::cout << p << "\t" << ptr(p) << "\t" << L1(p, omega, k) << "\n";
     }
 
-    std::cout << "Real part of T2 (2))\n";
     std::cout << "result1\t" << result1 << "\n";
     std::cout << "error1\t" << error1 << "\n";
     std::cout << "omega\t" << omega << "\n";
     std::cout << "k\t" << k << "\n";
-    std::cout << "omega - k\t" << omega - k << "\n";
-    exit(0);
+    std::cout << "omega - k\t" << omega - k << "\n";*/
+    //  exit(0);
     // return 0;
   }
   gsl_integration_workspace_free(w1);
