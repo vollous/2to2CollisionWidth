@@ -803,13 +803,13 @@ double Process::integrand_r_theta_t(const double &r, const double &theta)
   const double a = HTLa(mtinf, omega, k);
   const double b = HTLb(mtinf, omega, k);
 
-  std::cout << "Phi " << phi << " |\t" << AmplitudeSquared(p1_, p2_, p3) <<
+  std::cout << "Phi " << phi << " |\t" << AmplitudeSquared_t(p1_, p2_, p3) <<
      "\t"
             << pow(-pow(mtinf, 2) + t, 2) << "\t"
             << pow(pow(b, 2) + 2 * (1 + a) * b * omega + pow(1 + a, 2) * t, 2)
             << "\n";*/
 
-  if (isinf(AmplitudeSquared(p1_, p2, p3_) * Distribution(m2, p2, s2) *
+  if (isinf(AmplitudeSquared_t(p1_, p2, p3_) * Distribution(m2, p2, s2) *
             (1 + Distribution(m4, p4, s4)) * r /
             (delta_pzz * 4 * Energy(m2, p2) * Energy(m4, p4))))
   {
@@ -823,18 +823,18 @@ double Process::integrand_r_theta_t(const double &r, const double &theta)
     std::cout << "theta\t" << theta << "\n";
     std::cout << "delta_pzz\t" << delta_pzz << "\n";
 
-    std::cout << "Amp\t" << AmplitudeSquared(p1_, p2, p3_) << "\n";
+    std::cout << "Amp\t" << AmplitudeSquared_t(p1_, p2, p3_) << "\n";
     std::cout << "Distribution(m2, p2, s2)\t" << Distribution(m2, p2, s2)
               << "\n";
     std::cout << " Distribution(m4, p4, s4)\t" << Distribution(m4, p4, s4)
               << "\n";
-    std::cout << "Amp\t" << AmplitudeSquared(p1_, p2, p3_) << "\n";
+    std::cout << "Amp\t" << AmplitudeSquared_t(p1_, p2, p3_) << "\n";
     std::cout << "Energy(m2, p2)\t" << Energy(m2, p2) << "\n";
     std::cout << "Energy(m4, p4)\t" << Energy(m4, p4) << "\n";
     exit(0);
   }
 
-  return AmplitudeSquared(p1_, p2, p3_) * Distribution(m2, p2, s2) *
+  return AmplitudeSquared_t(p1_, p2, p3_) * Distribution(m2, p2, s2) *
          (1 + Distribution(m4, p4, s4)) * r /
          (delta_pzz * 4 * Energy(m2, p2) * Energy(m4, p4));
 }
@@ -915,13 +915,13 @@ double Process::integrand_theta_phi_s(const double &theta, const double &phi)
   const double a = HTLa(mtinf, omega, k);
   const double b = HTLb(mtinf, omega, k);
 
-  std::cout << "Phi " << phi << " |\t" << AmplitudeSquared(p1_, p2_, p3) <<
+  std::cout << "Phi " << phi << " |\t" << AmplitudeSquared_t(p1_, p2_, p3) <<
      "\t"
             << pow(-pow(mtinf, 2) + t, 2) << "\t"
             << pow(pow(b, 2) + 2 * (1 + a) * b * omega + pow(1 + a, 2) * t, 2)
             << "\n";*/
 
-  return AmplitudeSquared(p1_, p2_, p3) * (1 - Distribution(m3, p3, s3)) *
+  return AmplitudeSquared_t(p1_, p2_, p3) * (1 - Distribution(m3, p3, s3)) *
          (1 + Distribution(m4, p4, s4)) * r * r * sin(phi) /
          (delta_r * 4 * Energy(m3, p3) * Energy(m4, p4));
 }
@@ -938,7 +938,8 @@ double Process::MonteCarloInt_s(const double &E1,
   // process with a given p1 and p2
   if (E1 + E2 - Energy(m3 + m4, p1p2) <= 0) return 0.;
 
-  double integral = Integrate_s(E1, E1 + E2, p1, p2, p1p2);
+  double integral =
+      Integrate_s(E1, E1 + E2, p1, p2, p1p2) * PropagatorSquared_s(p1, p2);
 
   // Normalization
   integral *=
@@ -984,7 +985,8 @@ double Process::MonteCarloInt_t(const double &E1,
   if (cond1 * cond2 > 0 and cond1 * cond3 > 0)
     return 0.; // Then cond2 * cond3 > 0 and all have the same sign
 
-  double integral = Integrate_t(E1, ED, p1, p3, p1 - p3);
+  double integral =
+      Integrate_t(E1, ED, p1, p3, p1 - p3) * PropagatorSquared_t(p1, p3);
 
   // std::cout << "integral is\t" << integral << "\n";
 

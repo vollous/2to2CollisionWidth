@@ -446,16 +446,48 @@ struct Process
                    const double &m4_in);
 
   /**
-   * @brief Amplitude
+   * @brief propagator of channel_s
+   *
+   * @param p1 momentum of particle 1
+   * @param p2 momentum of particle 2
+   * @return double
+   */
+  virtual double PropagatorSquared_s(const std::vector<double> &p1,
+                                     const std::vector<double> &p2) = 0;
+
+  /**
+   * @brief Amplitude of s channel
    *
    * @param p1 momentum of particle 1
    * @param p2 momentum of particle 2
    * @param p3 momentum of particle 3
    * @return double
    */
-  virtual double AmplitudeSquared(const std::vector<double> &p1,
-                                  const std::vector<double> &p2,
-                                  const std::vector<double> &p3) = 0;
+  virtual double AmplitudeSquared_s(const std::vector<double> &p1,
+                                    const std::vector<double> &p2,
+                                    const std::vector<double> &p3) = 0;
+
+  /**
+   * @brief propagator of channel_s
+   *
+   * @param p1 momentum of particle 1
+   * @param p2 momentum of particle 2
+   * @return double
+   */
+  virtual double PropagatorSquared_t(const std::vector<double> &p1,
+                                     const std::vector<double> &p2) = 0;
+
+  /**
+   * @brief Amplitude of t channel
+   *
+   * @param p1 momentum of particle 1
+   * @param p2 momentum of particle 2
+   * @param p3 momentum of particle 3
+   * @return double
+   */
+  virtual double AmplitudeSquared_t(const std::vector<double> &p1,
+                                    const std::vector<double> &p2,
+                                    const std::vector<double> &p3) = 0;
 
   static int Integrand_s(const int *ndim,
                          const cubareal xx[],

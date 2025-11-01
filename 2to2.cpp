@@ -40,109 +40,35 @@ using std::chrono::duration_cast;
 using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 namespace plt = matplotlibcpp;
-struct tLgTOtRH : Process
-{
-  using Process::Process; // Import constructor
-
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
-  {
-
-    const double t =
-        pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
-    const double p1dotp2 = p1 * p2;
-    const double s = m1 * m1 + m2 * m2 + 2 * E1_ * Energy(m2, p2) - 2 * p1dotp2;
-    const double mt = m1;
-    const double mg = m2;
-    const double ms = m3;
-    return (
-        (2 * pow(gs, 2) *
-         (2 * pow(mg, 2) *
-              (pow(mg, 4) * pow(s, 2) +
-               pow(mg, 2) * (pow(ms, 2) * pow(s - t, 2) + pow(s, 2) * t) -
-               s * t *
-                   (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) +
-                    pow(s + t, 2))) +
-          pow(mt, 2) *
-              (-4 * pow(mg, 6) * s - s * t * (pow(s, 2) + pow(t, 2)) -
-               2 * pow(mg, 4) * (4 * pow(s, 2) - 2 * s * t + pow(t, 2)) +
-               pow(mg, 2) * (4 * pow(ms, 4) * (s + t) + 8 * s * t * (s + t) -
-                             5 * pow(ms, 2) * (pow(s, 2) + pow(t, 2))) +
-               pow(mt, 2) *
-                   (2 * pow(mg, 6) + pow(mg, 4) * (8 * s - 2 * t) +
-                    pow(s + t, 3) +
-                    pow(mt, 2) *
-                        (-2 * pow(mg, 4) + 6 * pow(mg, 2) * pow(ms, 2) -
-                         2 * pow(mt, 4) + 4 * pow(mt, 2) * (s + t) -
-                         3 * pow(s + t, 2)) -
-                    2 * pow(mg, 2) *
-                        (2 * pow(ms, 4) + pow(ms, 2) * (s + t) -
-                         2 * (pow(s, 2) - 4 * s * t + pow(t, 2)))))) *
-         pow(yt, 2)) /
-        (pow(mg, 2) * pow(-pow(mt, 2) + s, 2) * pow(-pow(mt, 2) + t, 2)));
-  }
-};
-
-struct tLgTOtRH_massless_gluon : Process
-{
-  using Process::Process; // Import constructor
-
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
-  {
-
-    const double t =
-        pow(m1, 2) + pow(m3, 2) - 2 * E1_ * Energy(m3, p3) + 2 * p1_ * p3;
-    const double p1dotp2 = p1 * p2;
-    const double s = m1 * m1 + m2 * m2 + 2 * E1_ * Energy(m2, p2) - 2 * p1dotp2;
-    const double mt = m1;
-    const double ms = m3;
-    return (
-        (4 * pow(gs, 2) *
-         (2 * pow(ms, 2) * pow(mt, 6) +
-          pow(mt, 4) * (-2 * pow(ms, 4) + (s - 3 * t) * (3 * s - t)) -
-          s * t * (2 * pow(ms, 4) - 2 * pow(ms, 2) * (s + t) + pow(s + t, 2)) +
-          pow(mt, 2) * (2 * pow(ms, 4) * (s + t) + 4 * s * t * (s + t) -
-                        3 * pow(ms, 2) * (pow(s, 2) + pow(t, 2)))) *
-         pow(yt, 2)) /
-        pow(pow(mt, 4) + s * t - pow(mt, 2) * (s + t), 2));
-  }
-};
-
-struct tLgTOtRH_massless : Process
-{
-  using Process::Process;           // Import constructor
-  double mtinf = gs / sqrt(6.) * T; // Top thermal mass
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
-  {
-
-    const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
-    const double p1dotp2 = p1 * p2;
-    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
-
-    double res = (-4 * s * t * el * el * gs * gs * mt_pole * mt_pole) /
-                 (3. * pow(t - mtinf * mtinf, 2) * mW * mW * sW * sW);
-
-    if (res < 0)
-    {
-      std::cout << "Negative amplitude sqr? \n";
-      return 0.;
-    }
-    return res;
-  }
-};
 
 struct tLgTOtRH_massless_helicity_thermal_masses : Process
 {
   using Process::Process;                 // Import constructor
   const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
+
+  double PropagatorSquared_s(const std::vector<double> &p1,
+                             const std::vector<double> &p2) override
+  {
+    return 0;
+  }
+
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0;
+  }
+
+  double PropagatorSquared_t(const std::vector<double> &p1,
+                             const std::vector<double> &p3) override
+  {
+    const double t = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
+    return 1 / pow(-pow(mtinf, 2) + t, 2);
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
   {
 
     const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
@@ -150,7 +76,7 @@ struct tLgTOtRH_massless_helicity_thermal_masses : Process
     const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
 
     double res = (-2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
-                 (pow(mW, 2) * pow(sW, 2) * pow(-pow(mtinf, 2) + t, 2));
+                 (pow(mW, 2) * pow(sW, 2));
 
     if (res < 0)
     {
@@ -193,15 +119,22 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     return pow(m, 2) / k * ((pow(omega / k, 2) - 1) / 2. * arglog);
   }
 
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
+  double PropagatorSquared_s(const std::vector<double> &p1,
+                             const std::vector<double> &p2) override
   {
+    return 0;
+  }
 
-    const double p1dotp2 = p1 * p2;
-    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0;
+  }
 
-    // Self energy
+  double PropagatorSquared_t(const std::vector<double> &p1,
+                             const std::vector<double> &p3) override
+  {
     const double omega = Energy(0, p1) - Energy(0, p3);
     const double k     = Energy(0, p1 - p3);
     const double t =
@@ -215,13 +148,25 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     const std::complex<double> a(REa, IMa);
     const std::complex<double> b(REb, IMb);
 
-    const double PropagatorSquared =
-        std::norm((a + 1.) /
-                  (pow(b, 2) + 2. * (a + 1.) * b * omega + pow(a + 1., 2) * t));
+    return std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
+                                 pow(a + 1., 2) * t));
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+    const double t =
+        -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
+
+    // Self energy
 
     const double res =
         -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
-        (pow(mW, 2) * pow(sW, 2)) * PropagatorSquared;
+        (pow(mW, 2) * pow(sW, 2));
 
     if (res < 0)
     {
@@ -576,15 +521,15 @@ struct tLgTOtRH_massless_helicity_full : Process
                             double &REb,
                             double &IMb)
   {
-    /*const double rT1 = ReT1(gs, C, omega, k, 0, 0);
+    const double rT1 = ReT1(gs, C, omega, k, 0, 0);
     const double rT2 = ReT2(gs, C, omega, k, 0, 0);
     const double iT1 = ImT1(gs, C, omega, k, 0, 0);
-    const double iT2 = ImT2(gs, C, omega, k, 0, 0);*/
+    const double iT2 = ImT2(gs, C, omega, k, 0, 0);
 
-    const double rT1 = ReT1_rasterized(omega, k);
+    /*const double rT1 = ReT1_rasterized(omega, k);
     const double rT2 = ReT2_rasterized(omega, k);
     const double iT1 = ImT1_rasterized(omega, k);
-    const double iT2 = ImT2_rasterized(omega, k);
+    const double iT2 = ImT2_rasterized(omega, k);*/
 
     REa = rT1 / pow(k, 2) - (omega * rT2) / pow(k, 2);
     IMa = iT1 / pow(k, 2) - (omega * iT2) / pow(k, 2);
@@ -595,15 +540,22 @@ struct tLgTOtRH_massless_helicity_full : Process
     return;
   }
 
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
+  double PropagatorSquared_s(const std::vector<double> &p1,
+                             const std::vector<double> &p2) override
   {
+    return 0;
+  }
 
-    const double p1dotp2 = p1 * p2;
-    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0;
+  }
 
-    // Self energy
+  double PropagatorSquared_t(const std::vector<double> &p1,
+                             const std::vector<double> &p3) override
+  {
     const double omega = Energy(0, p1) - Energy(0, p3);
     const double k     = Energy(0, p1 - p3);
     const double t =
@@ -615,13 +567,22 @@ struct tLgTOtRH_massless_helicity_full : Process
     const std::complex<double> a(REa, IMa);
     const std::complex<double> b(REb, IMb);
 
-    const double PropagatorSquared =
-        std::norm((a + 1.) /
-                  (pow(b, 2) + 2. * (a + 1.) * b * omega + pow(a + 1., 2) * t));
+    return std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
+                                 pow(a + 1., 2) * t));
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+    const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
 
     const double res =
         -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
-        (pow(mW, 2) * pow(sW, 2)) * PropagatorSquared;
+        (pow(mW, 2) * pow(sW, 2));
 
     if (res < 0)
     {
@@ -638,9 +599,17 @@ struct tLgTOtRg_massless_helicity : Process
 {
   using Process::Process;           // Import constructor
   double mtinf = gs / sqrt(6.) * T; // Top thermal mass
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
+
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0.;
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
   {
 
     const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
@@ -662,9 +631,16 @@ struct identity : Process
 {
   using Process::Process; // Import constructor
 
-  double AmplitudeSquared(const std::vector<double> &p1,
-                          const std::vector<double> &p2,
-                          const std::vector<double> &p3) override
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0.;
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
   {
     return 1.;
   }
@@ -813,7 +789,7 @@ void test_ImT1()
   int s3 = 1;
   int s4 = -1;
 
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   for (double k : {0.5, 1.0, 1.5})
   {
@@ -863,7 +839,7 @@ void test_ReT2()
   int s3 = 1;
   int s4 = -1;
 
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   for (double k : {0.5, 1.0, 1.5})
   {
@@ -913,7 +889,7 @@ void test_ImT2()
   int s3 = 1;
   int s4 = -1;
 
-  tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   for (double k : {0.5, 1.0, 1.5})
   {
@@ -1004,41 +980,6 @@ int main()
        &                  \
       g                    t_R
 */
-
-  // Complete process. No approximations
-  // Time : 8.824 s
-  // Time redux :
-  // T = 10 | Gamma_y = 2.92322e-06 +- 2.66048e-08
-  // T = 100 | Gamma_y = 0.0132593 +- 0.000115383
-  // T = 200 | Gamma_y = 0.00194427 +- 1.01971e-05
-  m1 = mt; // mt
-  m2 = mg; // mg
-  m3 = ms; // ms
-  m4 = mt; // mt
-  // tLgTOtRH proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
-
-  // Complete process. No approximations but massless gluons
-  // T = 10 | Gamma_y = 9.34226e-07 +- 1.26619e-08
-  // T = 100 | Gamma_y = 0.000933403 +- 8.98317e-06
-  // T = 200 | Gamma_y = 0.00185429 +- 1.41573e-05
-  // Time : 8.037 s
-
-  m1 = mt; // mt
-  m2 = 0;  // mg
-  m3 = ms; // ms
-  m4 = mt; // mt
-  // tLgTOtRH_massless_gluon proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
-
-  // t-channel with massless approximationsi. // not a care about helicities
-  // Gamma_y = 0.00380921 +- 2.20009e-05
-  // Time : 35.298 s
-  // Gamma_y = 0.0376673 +- 0.000164028
-  // Time redux : 34.927 s
-  m1 = 0; // mt
-  m2 = 0; // mg
-  m3 = 0; // ms
-  m4 = 0; // mt
-  // tLgTOtRH_massless proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // t-channel with massless approximationsi. // care very much about helicities
   // Gamma_y = 0.00571382 +- 3.30013e-05
