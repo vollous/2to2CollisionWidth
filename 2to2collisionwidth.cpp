@@ -391,7 +391,7 @@ double Process::ImT1(const double &g,
       exit(0);
     }
     gsl_integration_workspace_free(w);
-    r += result;
+    r = result;
   }
   else
   {
@@ -411,7 +411,7 @@ double Process::ImT1(const double &g,
 
     double result, error;
     if (gsl_integration_qagiu(
-            F, (omega + k) / 2., 1e-2, 1e-2, 10000, w, &result, &error) != 0)
+            F, (omega + k) / 2., 1e-6, 1e-6, 10000, w, &result, &error) != 0)
     {
       std::cout << "Imaginary part of T1 (2))\n";
       std::cout << "error\t" << error << "\n";
@@ -422,7 +422,7 @@ double Process::ImT1(const double &g,
     }
     gsl_integration_workspace_free(w);
     gsl_integration_workspace *w2 = gsl_integration_workspace_alloc(10000);
-    r += result; // This sign comes from the retarded propagator
+    r = result; // This sign comes from the retarded propagator
 
     auto ptr2 = [=](const double &p) -> double
     {
@@ -432,19 +432,20 @@ double Process::ImT1(const double &g,
     gsl_function_pp<decltype(ptr2)> Fp2(ptr2);
     gsl_function *F2 = static_cast<gsl_function *>(&Fp2);
 
-    result, error;
+    double result2, error2;
     if (gsl_integration_qagiu(
-            F2, (k - omega) / 2., 1e-6, 1e-6, 10000, w2, &result, &error) != 0)
+            F2, (k - omega) / 2., 1e-6, 1e-6, 10000, w2, &result2, &error2) !=
+        0)
     {
       std::cout << "Imaginary part of T1 (3))\n";
-      std::cout << "error\t" << error << "\n";
+      std::cout << "error\t" << error2 << "\n";
       std::cout << "omega\t" << omega << "\n";
       std::cout << "k\t" << k << "\n";
       std::cout << "omega - k\t" << omega - k << "\n";
       exit(0);
     }
-    gsl_integration_workspace_free(w);
-    r += result;
+    gsl_integration_workspace_free(w2);
+    r += result2;
   }
   return g * g * C * r / (8. * M_PI * k);
 }
@@ -504,7 +505,7 @@ double Process::ReT2(const double &g,
     exit(0);
   }
   gsl_integration_workspace_free(w);
-  r += result;
+  r                             = result;
   gsl_integration_workspace *w1 = gsl_integration_workspace_alloc(10000);
 
   // convert std::vector to array
