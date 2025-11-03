@@ -506,10 +506,9 @@ struct tLgTOtRH_massless_helicity_full : Process
                 m1_in,
                 m2_in,
                 m3_in,
-                m4_in)
-  {
-    Generate_Billinear_a_b();
-  };
+                m4_in) {
+        // Generate_Billinear_a_b();
+      };
 
   // Calculation of "a" and "b"
 
