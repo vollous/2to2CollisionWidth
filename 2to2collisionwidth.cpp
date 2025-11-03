@@ -364,7 +364,7 @@ double Process::ImT1(const double &g,
 
     auto ptr = [=](const double &p) -> double
     {
-      return (Distribution(mB, {p, 0, 0}, -1) * (p - omega) -
+      return (Distribution(mB, {p, 0, 0}, -1) * (p - omega) +
               p * Distribution(mF, {p, 0, 0}, 1));
     };
 
