@@ -561,7 +561,7 @@ double Process::ImT2(const double &g,
 
   auto ptr = [=](const double &p) -> double
   {
-    return (Distribution(mB, {p, 0, 0}, -1) - Distribution(mF, {p, 0, 0}, 1));
+    return (Distribution(mF, {p, 0, 0}, 1) - Distribution(mB, {p, 0, 0}, -1));
   };
 
   gsl_function_pp<decltype(ptr)> Fp(ptr);
@@ -588,7 +588,7 @@ double Process::ImT2(const double &g,
   }
   gsl_integration_workspace_free(w);
 
-  return -g * g * C / (16. * M_PI * k) * (omega * omega - k * k) * result;
+  return g * g * C / (8. * M_PI * k) * (omega * omega - k * k) * result;
 }
 
 void Process::calculate_r(double &r,
