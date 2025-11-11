@@ -144,7 +144,7 @@ struct tLgTOtRH_massless_helicity_HTL : Process
   }
 };
 
-struct tLgTOtRH_massless_helicity_full : Process
+struct tLgTOtRH_massless_helicity_full_LL : Process
 {
   using Process::Process;                 // Import constructor
   const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
@@ -454,16 +454,16 @@ struct tLgTOtRH_massless_helicity_full : Process
     // rasterized_rasterized exit(0);
   }
 
-  tLgTOtRH_massless_helicity_full(const double &T_in,
-                                  const double &prefactor_in,
-                                  const int &s1_in,
-                                  const int &s2_in,
-                                  const int &s3_in,
-                                  const int &s4_in,
-                                  const double &m1_in,
-                                  const double &m2_in,
-                                  const double &m3_in,
-                                  const double &m4_in)
+  tLgTOtRH_massless_helicity_full_LL(const double &T_in,
+                                     const double &prefactor_in,
+                                     const int &s1_in,
+                                     const int &s2_in,
+                                     const int &s3_in,
+                                     const int &s4_in,
+                                     const double &m1_in,
+                                     const double &m2_in,
+                                     const double &m3_in,
+                                     const double &m4_in)
       : Process(T_in,
                 prefactor_in,
                 s1_in,
@@ -473,9 +473,19 @@ struct tLgTOtRH_massless_helicity_full : Process
                 m1_in,
                 m2_in,
                 m3_in,
-                m4_in) {
-        // Generate_Billinear_a_b();
-      };
+                m4_in)
+  {
+    double t1, t2, t3, t4;
+    /* Calculate_a_b(2., 1., t1, t2, t3, t4);
+    Calculate_a_b(1., 2., t1, t2, t3, t4);
+    Calculate_a_b(2, 1.8, t1, t2, t3, t4);
+    // std::cout << "\n\n\n";
+    Calculate_a_b(-2., 1., t1, t2, t3, t4);
+    Calculate_a_b(-1., 2., t1, t2, t3, t4);
+    Calculate_a_b(-2, 1.8, t1, t2, t3, t4);*/
+    // exit(0);
+    //  Generate_Billinear_a_b();
+  };
 
   // Calculation of "a" and "b"
 
