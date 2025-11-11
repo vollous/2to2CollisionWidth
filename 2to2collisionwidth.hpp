@@ -198,6 +198,9 @@ struct Process
   const double m1, m2, m3, m4, prefactor;
   double T;
 
+  double REa_s, IMa_s, REb_s, IMb_s;
+  double REa_t, IMa_t, REb_t, IMb_t;
+
   /**
    * @brief Calculate energy
    *
@@ -237,6 +240,24 @@ struct Process
    * @return double
    */
   double L2(const double &p, const double &omega, const double &k);
+
+  /**
+   * @brief Function used to calculate the real part and imaginary part of a and
+   * b
+   *
+   * @param omega
+   * @param k
+   * @param REa
+   * @param IMa
+   * @param REb
+   * @param IMb
+   */
+  virtual void Calculate_a_b(const double &omega,
+                             const double &k,
+                             double &REa,
+                             double &IMa,
+                             double &REb,
+                             double &IMb);
 
   /**
    * @brief Real part of \f$ T_1 \f$ function
@@ -447,16 +468,6 @@ struct Process
                    const double &m4_in);
 
   /**
-   * @brief propagator of channel_s
-   *
-   * @param p1 momentum of particle 1
-   * @param p2 momentum of particle 2
-   * @return double
-   */
-  virtual double PropagatorSquared_s(const std::vector<double> &p1,
-                                     const std::vector<double> &p2) = 0;
-
-  /**
    * @brief Amplitude of s channel
    *
    * @param p1 momentum of particle 1
@@ -467,16 +478,6 @@ struct Process
   virtual double AmplitudeSquared_s(const std::vector<double> &p1,
                                     const std::vector<double> &p2,
                                     const std::vector<double> &p3) = 0;
-
-  /**
-   * @brief propagator of channel_s
-   *
-   * @param p1 momentum of particle 1
-   * @param p2 momentum of particle 2
-   * @return double
-   */
-  virtual double PropagatorSquared_t(const std::vector<double> &p1,
-                                     const std::vector<double> &p2) = 0;
 
   /**
    * @brief Amplitude of t channel

@@ -238,6 +238,16 @@ double Process::L2(const double &p, const double &omega, const double &k)
                  (pow(omega - k, 2) * (pow(omega + k, 2) - 4 * pow(p, 2)))));
 }
 
+void Process::Calculate_a_b(const double &omega,
+                            const double &k,
+                            double &REa,
+                            double &IMa,
+                            double &REb,
+                            double &IMb)
+{
+  return;
+}
+
 double Process::ReT1(const double &g,
                      const double &C,
                      const double &omega,
@@ -958,8 +968,7 @@ double Process::MonteCarloInt_s(const double &E1,
   // process with a given p1 and p2
   if (E1 + E2 - Energy(m3 + m4, p1p2) <= 0) return 0.;
 
-  double integral =
-      Integrate_s(E1, E1 + E2, p1, p2, p1p2) * PropagatorSquared_s(p1, p2);
+  double integral = Integrate_s(E1, E1 + E2, p1, p2, p1p2);
 
   // Normalization
   integral *=
@@ -1005,8 +1014,13 @@ double Process::MonteCarloInt_t(const double &E1,
   if (cond1 * cond2 > 0 and cond1 * cond3 > 0)
     return 0.; // Then cond2 * cond3 > 0 and all have the same sign
 
-  double integral =
-      Integrate_t(E1, ED, p1, p3, p1 - p3) * PropagatorSquared_t(p1, p3);
+  // Calculate a and b for the t-channel
+  const double omega = Energy(0, p1) - Energy(0, p3);
+  const double k     = Energy(0, p1 - p3);
+
+  Calculate_a_b(omega, k, REa_t, IMa_t, REb_t, IMb_t);
+
+  double integral = Integrate_t(E1, ED, p1, p3, p1 - p3);
 
   // std::cout << "integral is\t" << integral << "\n";
 

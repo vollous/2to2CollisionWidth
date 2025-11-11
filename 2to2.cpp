@@ -46,24 +46,11 @@ struct tLgTOtRH_massless_helicity_thermal_masses : Process
   using Process::Process;                 // Import constructor
   const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
 
-  double PropagatorSquared_s(const std::vector<double> &p1,
-                             const std::vector<double> &p2) override
-  {
-    return 0;
-  }
-
   double AmplitudeSquared_s(const std::vector<double> &p1,
                             const std::vector<double> &p2,
                             const std::vector<double> &p3) override
   {
     return 0;
-  }
-
-  double PropagatorSquared_t(const std::vector<double> &p1,
-                             const std::vector<double> &p3) override
-  {
-    const double t = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
-    return 1 / pow(-pow(mtinf, 2) + t, 2);
   }
 
   double AmplitudeSquared_t(const std::vector<double> &p1,
@@ -76,7 +63,7 @@ struct tLgTOtRH_massless_helicity_thermal_masses : Process
     const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
 
     double res = (-2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
-                 (pow(mW, 2) * pow(sW, 2));
+                 (pow(mW, 2) * pow(sW, 2)) / pow(-pow(mtinf, 2) + t, 2);
 
     if (res < 0)
     {
@@ -119,37 +106,11 @@ struct tLgTOtRH_massless_helicity_HTL : Process
     return pow(m, 2) / k * ((pow(omega / k, 2) - 1) / 2. * arglog);
   }
 
-  double PropagatorSquared_s(const std::vector<double> &p1,
-                             const std::vector<double> &p2) override
-  {
-    return 0;
-  }
-
   double AmplitudeSquared_s(const std::vector<double> &p1,
                             const std::vector<double> &p2,
                             const std::vector<double> &p3) override
   {
     return 0;
-  }
-
-  double PropagatorSquared_t(const std::vector<double> &p1,
-                             const std::vector<double> &p3) override
-  {
-    const double omega = Energy(0, p1) - Energy(0, p3);
-    const double k     = Energy(0, p1 - p3);
-    const double t =
-        -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
-
-    const double REa = Rea(mtinf, omega, k);
-    const double IMa = Ima(mtinf, omega, k);
-    const double REb = Reb(mtinf, omega, k);
-    const double IMb = Imb(mtinf, omega, k);
-
-    const std::complex<double> a(REa, IMa);
-    const std::complex<double> b(REb, IMb);
-
-    return std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
-                                 pow(a + 1., 2) * t));
   }
 
   double AmplitudeSquared_t(const std::vector<double> &p1,
@@ -163,9 +124,15 @@ struct tLgTOtRH_massless_helicity_HTL : Process
         -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
 
     // Self energy
+    const std::complex<double> a(REa_t, IMa_t);
+    const std::complex<double> b(REb_t, IMb_t);
+    const double omega = Energy(0, p1) - Energy(0, p3);
+    const double k     = Energy(0, p1 - p3);
 
     const double res =
-        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
+        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t *
+          std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
+                                pow(a + 1., 2) * t))) /
         (pow(mW, 2) * pow(sW, 2));
 
     if (res < 0)
@@ -512,12 +479,12 @@ struct tLgTOtRH_massless_helicity_full : Process
 
   // Calculation of "a" and "b"
 
-  inline void Calculate_a_b(const double &omega,
-                            const double &k,
-                            double &REa,
-                            double &IMa,
-                            double &REb,
-                            double &IMb)
+  void Calculate_a_b(const double &omega,
+                     const double &k,
+                     double &REa,
+                     double &IMa,
+                     double &REb,
+                     double &IMb) override
   {
     const double rT1 = ReT1(gs, C, omega, k, 0, 0);
     const double rT2 = ReT2(gs, C, omega, k, 0, 0);
@@ -538,35 +505,11 @@ struct tLgTOtRH_massless_helicity_full : Process
     return;
   }
 
-  double PropagatorSquared_s(const std::vector<double> &p1,
-                             const std::vector<double> &p2) override
-  {
-    return 0;
-  }
-
   double AmplitudeSquared_s(const std::vector<double> &p1,
                             const std::vector<double> &p2,
                             const std::vector<double> &p3) override
   {
     return 0;
-  }
-
-  double PropagatorSquared_t(const std::vector<double> &p1,
-                             const std::vector<double> &p3) override
-  {
-    const double omega = Energy(0, p1) - Energy(0, p3);
-    const double k     = Energy(0, p1 - p3);
-    const double t =
-        -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3; // omega^2-k^2
-
-    double REa, IMa, REb, IMb;
-    Calculate_a_b(omega, k, REa, IMa, REb, IMb);
-
-    const std::complex<double> a(REa, IMa);
-    const std::complex<double> b(REb, IMb);
-
-    return std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
-                                 pow(a + 1., 2) * t));
   }
 
   double AmplitudeSquared_t(const std::vector<double> &p1,
@@ -578,8 +521,15 @@ struct tLgTOtRH_massless_helicity_full : Process
     const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
     const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
 
+    const std::complex<double> a(REa_t, IMa_t);
+    const std::complex<double> b(REb_t, IMb_t);
+    const double omega = Energy(0, p1) - Energy(0, p3);
+    const double k     = Energy(0, p1 - p3);
+
     const double res =
-        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t) /
+        -(2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) * s * t *
+          std::norm((a + 1.) / (pow(b, 2) + 2. * (a + 1.) * b * omega +
+                                pow(a + 1., 2) * t))) /
         (pow(mW, 2) * pow(sW, 2));
 
     if (res < 0)
@@ -738,7 +688,6 @@ void test_ReT1()
   int s4 = -1;
 
   tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
-
 
   for (double k : {0.5, 1.0, 1.5})
   {
