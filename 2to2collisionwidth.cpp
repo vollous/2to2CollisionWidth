@@ -974,7 +974,7 @@ double Process::MonteCarloInt_s(const double &E1,
   integral *=
       _2_PI_FACTORS * Distribution(m1, p1, s1) * Distribution(m2, p2, s2);
 
-  return integral;
+  return integral / prefactor;
 };
 
 double Process::MonteCarloInt_t(const double &E1,
@@ -1036,7 +1036,7 @@ double Process::MonteCarloInt_t(const double &E1,
   integral *=
       _2_PI_FACTORS * Distribution(m1, p1, s1) * (1 - Distribution(m3, p3, s3));
 
-  return integral;
+  return integral / prefactor;
 };
 
 Process::Process(const double &T_in,

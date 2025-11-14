@@ -1017,6 +1017,10 @@ int main()
   double v = 10;
   double m1, m2, m3, m4;
 
+  const double vw    = 0.95;
+  const double gamma = 1; /*/ sqrt(1 - pow(vw, 2));*/
+  const double N1    = gamma * 2 * pow(M_PI, 3) * pow(T, 2) / 3;
+
   std::cout << "Temperature is T = " << T << "\n";
 
   double mt = sqrt(pow(yt * v / sqrt(2.), 2) + pow(gs / sqrt(6.) * T, 2));
@@ -1057,7 +1061,7 @@ int main()
   m3 = 0; // ms
   m4 = 0; // mt
   // tLgTOtRH_massless_helicity_thermal_masses proc(
-  //     T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+  //     T, N1 * T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   //  t-channel with massless HTL. // care very much about helicities
   //  Gamma_y = = 0.00422475 +- 1.73651e-05
@@ -1066,8 +1070,8 @@ int main()
   m2 = 0; // mg
   m3 = 0; // ms
   m4 = 0; // mt
-  // tLgTOtRH_massless_helicity_HTL proc(T, T * T, s1, s2, s3, s4, m1, m2, m3,
-  // m4);
+  // tLgTOtRH_massless_helicity_HTL proc(T, N1 * T * T, s1, s2, s3, s4, m1, m2,
+  // m3, m4);
 
   // std::vector<double> p1 = {-10, 5, 1};
   // std::vector<double> p3 = {10, 5, -2};
@@ -1084,7 +1088,7 @@ int main()
   m3 = 0; // ms
   m4 = 0; // mt
   tLgTOtRH_massless_helicity_full proc(
-      T, T * T, s1, s2, s3, s4, m1, m2, m3, m4);
+      T, N1 * T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   /****************************** useless *******************************/
 
@@ -1132,12 +1136,8 @@ int main()
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  const double vw    = 0.95;
-  const double gamma = 1; /*/ sqrt(1 - pow(vw, 2));*/
-  const double N1    = gamma * 2 * pow(M_PI, 3) * pow(T, 2) / 3;
-  std::cout << "\nT = " << T
-            << " | Gamma_y = " << integral[0] / (N1 * proc.prefactor) << " +- "
-            << error[0] / (N1 * proc.prefactor) << "\n\n";
+  std::cout << "\nT = " << T << " | \Gamma_y = " << integral[0] << " \pm "
+            << error[0] << "\n\n";
 
   // Your Code to Execute //
   auto end = std::chrono::system_clock::now();
