@@ -551,6 +551,114 @@ struct tLgTOtRH_massless_helicity_full_LL : Process
   }
 };
 
+struct tLgTOtRH_massless_helicity_full : Process
+{
+  using Process::Process;                 // Import constructor
+  const double mtinf = gs / sqrt(6.) * T; // Top thermal mass
+  const double C     = 4. / 3.;
+
+  // Calculation of "a" and "b"
+  void Calculate_a_b(const double &omega,
+                     const double &k,
+                     double &REa,
+                     double &IMa,
+                     double &REb,
+                     double &IMb) override
+  {
+    const double rT1 = ReT1(gs, C, omega, k, 0, 0);
+    const double rT2 = ReT2(gs, C, omega, k, 0, 0);
+    const double iT1 = ImT1(gs, C, omega, k, 0, 0);
+    const double iT2 = ImT2(gs, C, omega, k, 0, 0);
+
+    /*const double rT1 = ReT1_rasterized(omega, k);
+    const double rT2 = ReT2_rasterized(omega, k);
+    const double iT1 = ImT1_rasterized(omega, k);
+    const double iT2 = ImT2_rasterized(omega, k);*/
+
+    REa = rT2 / pow(k, 2) - (omega * rT1) / pow(k, 2);
+    IMa = iT2 / pow(k, 2) - (omega * iT1) / pow(k, 2);
+    REb = -((omega * rT2) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * rT1) / pow(k, 2);
+    IMb = -((omega * iT2) / pow(k, 2)) -
+          ((pow(k, 2) - pow(omega, 2)) * iT1) / pow(k, 2);
+    return;
+  }
+
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0;
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+
+    if (sqrt(p1 * p1 / T * T) > 100 or sqrt(p2 * p2 / T * T) > 100 or
+        sqrt(p3 * p3 / T * T) > 100)
+      return 0.;
+
+    const double p1dotp2 = p1 * p2;
+    const double s       = 2 * Energy(0, p1) * Energy(0, p2) - 2 * p1dotp2;
+    const double t       = -2 * Energy(0, p1) * Energy(0, p3) + 2 * p1 * p3;
+    const std::complex<double> a(REa_t, IMa_t);
+    const std::complex<double> b(REb_t, IMb_t);
+    const double omega = Energy(0, p1) - Energy(0, p3);
+    const double k     = Energy(0, p1 - p3);
+
+    const std::vector<double> p4 = p1 + p2 - p3;
+    const double eps             = p1[2] * (-(p2[1] * p4[0]) + p2[0] * p4[1]) +
+                       p1[1] * (p2[2] * p4[0] - p2[0] * p4[2]) +
+                       p1[0] * (-(p2[2] * p4[1]) + p2[1] * p4[2]);
+
+    const double REa = REa_t;
+    const double IMa = IMa_t;
+    const double REb = REb_t;
+    const double IMb = IMb_t;
+
+    const double den = std::norm((pow(b, 2) + 2. * (a + 1.) * b * omega +
+                                  pow(a + 1., 2) * t)) *
+                       (pow(mW, 2) * pow(sW, 2));
+
+    const double num =
+        (-2 * pow(el, 2) * pow(gs, 2) * pow(mt_pole, 2) *
+         (4 * eps * IMb + 4 * eps * IMb * REa - 4 * eps * IMa * REb +
+          pow(IMb, 2) * s + pow(REb, 2) * s + pow(IMb, 2) * t +
+          pow(REb, 2) * t + s * t + pow(IMa, 2) * s * t + 2 * REa * s * t +
+          pow(REa, 2) * s * t -
+          2 * (IMa * IMb + REb + REa * REb) * (s + t) * Energy(m2, p2) +
+          2 * IMa * IMb * s * Energy(m4, p4) + 2 * REb * s * Energy(m4, p4) +
+          2 * REa * REb * s * Energy(m4, p4) -
+          2 * Energy(m1, p1) *
+              ((IMa * IMb + REb + REa * REb) * t +
+               2 * (pow(IMb, 2) + pow(REb, 2)) * Energy(m4, p4))));
+
+    if (num / den < 0)
+    {
+      std::cout << "Negative amplitude sqr?\t" << num / den << " \n";
+      std::cout << "a = " << REa << "\t" << IMa << "\n";
+      std::cout << "b = " << REb << "\t" << IMb << "\n";
+
+      std::cout << "num = " << num << "\n";
+      std::cout << "dem = " << den << "\n";
+
+      std::cout << "s = " << s << "\n";
+      std::cout << "t = " << t << "\n";
+
+      std::cout << "p1 = " << p1_[0] << "\t" << p1_[1] << "\t" << p1_[2]
+                << "\n";
+      std::cout << "p2 = " << p2[0] << "\t" << p2[1] << "\t" << p2[2] << "\n";
+      std::cout << "p3 = " << p3_[0] << "\t" << p3_[1] << "\t" << p3_[2]
+                << "\n";
+      exit(0);
+      return 0.;
+    }
+    return num / den;
+  }
+};
+
 /********************* tL g -> tR g *********************/
 
 struct tLgTOtRg_massless_helicity : Process
