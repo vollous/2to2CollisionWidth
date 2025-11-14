@@ -742,8 +742,27 @@ double Process::integrand_r_theta_t(const double &r, const double &theta)
              ED_ * sqrt(sqrtpart)) /
                 (2. * (pow(ED_, 2) - pow(p1p3_[0], 2) - pow(p1p3_[2], 2)));
 
-  // const double pzz = (p1p3_[2] < 0) ? pzz1 : pzz2;
-  const double pzz = pzz2;
+  const double delta = 2 * sqrt(p1_ * p1_) * sqrt(p3_ * p3_) - 2 * p1_ * p3_;
+
+  const double pzz3 =
+      (-(pow(m2, 2) * sqrt(pow(ED_, 2) + delta)) +
+       pow(m4, 2) * sqrt(pow(ED_, 2) + delta) +
+       delta * sqrt(pow(ED_, 2) + delta) -
+       sqrt(pow(ED_, 2) *
+            (pow(m2, 4) + pow(m4, 4) - 2 * pow(m2, 2) * (pow(m4, 2) - delta) +
+             2 * pow(m4, 2) * delta + 4 * pow(r, 2) * delta + pow(delta, 2)))) /
+      (2. * delta);
+
+  const double pzz4 =
+      (-(pow(m2, 2) * sqrt(pow(ED_, 2) + delta)) +
+       pow(m4, 2) * sqrt(pow(ED_, 2) + delta) +
+       delta * sqrt(pow(ED_, 2) + delta) +
+       sqrt(pow(ED_, 2) *
+            (pow(m2, 4) + pow(m4, 4) - 2 * pow(m2, 2) * (pow(m4, 2) - delta) +
+             2 * pow(m4, 2) * delta + 4 * pow(r, 2) * delta + pow(delta, 2)))) /
+      (2. * delta);
+
+  const double pzz = ED_ < 0 ? pzz4 : pzz3;
 
   const double phi =
       acos(-p1p3_[2] / sqrt(pow(p1p3_[0], 2) + pow(p1p3_[2], 2)));
@@ -775,8 +794,12 @@ double Process::integrand_r_theta_t(const double &r, const double &theta)
               << pow(ED_, 2) - pow(p1p3_[0], 2) - pow(p1p3_[2], 2) << "\n";
     std::cout << "sqrt part\t" << sqrtpart << "\n";
     std::cout << "phi\t" << phi << "\n";
+
     std::cout << "pzz1\t" << pzz1 << "\n";
     std::cout << "pzz2\t" << pzz2 << "\n";
+    std::cout << "pzz3\t" << pzz3 << "\n";
+    std::cout << "pzz4\t" << pzz4 << "\n";
+
     std::cout << "pzz\t" << pzz << "\n";
     std::cout << "ED\t" << ED_ << "\n";
     std::cout << "p1p3\t" << p1p3_[0] << "\t" << p1p3_[1] << "\t" << p1p3_[2]
@@ -843,15 +866,25 @@ double Process::integrand_r_theta_t(const double &r, const double &theta)
             (1 + Distribution(m4, p4, s4)) * r /
             (delta_pzz * 4 * Energy(m2, p2) * Energy(m4, p4))))
   {
-    std::cout << "\n-----\tAmpltidude is divergent\t-----\n\n";
+    std::cout << "\n-----\tAmplitude is divergent\t-----\n\n";
     std::cout << "p1\t" << p1_[0] << "\t" << p1_[1] << "\t" << p1_[2] << "\n";
     std::cout << "p2\t" << p2[0] << "\t" << p2[1] << "\t" << p2[2] << "\n";
     std::cout << "p3\t" << p3_[0] << "\t" << p3_[1] << "\t" << p3_[2] << "\n";
     std::cout << "p4\t" << p4[0] << "\t" << p4[1] << "\t" << p4[2] << "\n\n";
 
+    std::cout << "pxtilde\t" << p1_[0] - p3_[0] << "\n";
+    std::cout << "pztilde\t" << p1_[2] - p3_[2] << "\n";
+
     std::cout << "r\t" << r << "\n";
     std::cout << "theta\t" << theta << "\n";
     std::cout << "delta_pzz\t" << delta_pzz << "\n";
+
+    std::cout << "ED = \t" << ED_ << "\n";
+
+    std::cout << "pzz1\t" << pzz1 << "\n";
+    std::cout << "pzz2\t" << pzz2 << "\n";
+    std::cout << "pzz3\t" << pzz3 << "\n";
+    std::cout << "pzz4\t" << pzz4 << "\n";
 
     std::cout << "Amp\t" << AmplitudeSquared_t(p1_, p2, p3_) << "\n";
     std::cout << "Distribution(m2, p2, s2)\t" << Distribution(m2, p2, s2)
