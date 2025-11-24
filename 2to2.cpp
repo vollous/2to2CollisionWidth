@@ -1136,7 +1136,7 @@ int main()
   std::cout << "Relative error \t" << error[0] / integral[0] << "\n";
   std::cout << "prob\t" << prob[0] << "\n";
 
-  std::cout << "\nT = " << T << " | \Gamma_y = " << integral[0] << " \pm "
+  std::cout << "\nT = " << T << " |\\Gamma_y = " << integral[0] << " \\pm "
             << error[0] << "\n\n";
 
   // Your Code to Execute //
