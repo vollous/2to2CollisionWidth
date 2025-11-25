@@ -693,6 +693,126 @@ struct tLgTOtRg_massless_helicity : Process
   }
 };
 
+struct gamma_M : Process
+{
+
+  int NC;
+  double fSqr;
+
+  double AmplitudeSquared_s(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0.;
+  }
+
+  double AmplitudeSquared_t(const std::vector<double> &p1,
+                            const std::vector<double> &p2,
+                            const std::vector<double> &p3) override
+  {
+    return 0.;
+  }
+
+  gamma_M(const double &T_in,
+          const double &prefactor_in,
+          const int &NC_in,
+          const double &fSqr_in)
+      : Process(T_in, prefactor_in, 1, 1, 0, 0, 0, 0, 0, 0)
+  {
+    NC   = NC_in;
+    fSqr = fSqr_in;
+
+    std::cout << "Gamma_M = " << CalculateGammaM() << "\n";
+  }
+
+  std::complex<double> h(const std::complex<double> &o)
+  {
+    if (o.real() > 10) return exp(-o) / pow(1. + exp(-o), 2);
+    return exp(o) / pow(exp(o) + 1., 2);
+  }
+
+  double k_integrand(const double &k)
+  {
+    std::complex<double> r;
+
+    double mL, mR, gammaR, gammaL;
+
+    int particle = 2;
+    // top
+    if (particle == 0)
+    {
+      mL     = 0.591 * T;
+      mR     = 0.591 * T;
+      gammaR = 0.157 * T;
+      gammaL = 0.157 * T;
+    }
+    // top
+    if (particle == 1)
+    {
+      mL     = 0.210 * T;
+      mR     = 0.210 * T;
+      gammaR = 0.028 * T;
+      gammaL = 0.028 * T;
+    }
+    // top
+    if (particle == 2)
+    {
+      mL     = 0.126 * T;
+      mR     = 0.126 * T;
+      gammaR = 0.01 * T;
+      gammaL = 0.01 * T;
+    }
+
+    const double omegaR = sqrt(pow(k, 2) + pow(mR, 2));
+    const double omegaL = sqrt(pow(k, 2) + pow(mL, 2));
+
+    const std::complex<double> epsR(omegaR, -gammaR);
+    const std::complex<double> epsL(omegaL, -gammaL);
+
+    r = -(h(epsL / T) + h(std::conj(epsR / T))) *
+        (epsL * std::conj(epsR) - pow(k, 2)) / (std::conj(epsR) - epsL);
+
+    r +=
+        (h(epsL / T) + h(epsR / T)) * (epsL * epsR + pow(k, 2)) / (epsR + epsL);
+
+    return 6 * NC * pow(k, 2) * r.imag() /
+           (omegaL * omegaR * pow(T, 2) * 2 * pow(M_PI, 2));
+  }
+
+  double CalculateGammaM()
+  {
+
+    gsl_integration_workspace *w = gsl_integration_workspace_alloc(10000);
+
+    double result, error;
+
+    auto ptr = [=](const double &k) -> double
+    {
+      if (isnan(k_integrand(k))) exit(0);
+      return k_integrand(k);
+    };
+
+    gsl_function_pp<decltype(ptr)> Fp(ptr);
+    gsl_function *F = static_cast<gsl_function *>(&Fp);
+
+    // Integrate from 0 to infinity
+    gsl_integration_qagiu(F,
+                          0.0,   // lower limit
+                          1e-8,  // absolute error
+                          1e-8,  // relative error
+                          10000, // workspace size
+                          w,
+                          &result,
+                          &error);
+
+    // printf("Integral = %.12f\n", result);
+    // printf("Estimated error = %.12f\n", error);
+
+    gsl_integration_workspace_free(w);
+    return result;
+  }
+};
+
 struct identity : Process
 {
   using Process::Process; // Import constructor
@@ -1090,6 +1210,11 @@ int main()
   tLgTOtRH_massless_helicity_full proc(
       T, N1 * T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
+  // Gamma_M
+  int NC      = 1;
+  double fSqr = 1;
+  gamma_M GammaM(T, 1, NC, fSqr);
+  exit(0);
   /****************************** useless *******************************/
 
   // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
