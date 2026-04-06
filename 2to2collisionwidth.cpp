@@ -1057,8 +1057,12 @@ double Process::MonteCarloInt_t(const double &E1,
 
   // std::cout << "integral is\t" << integral << "\n";
 
-  if (isinf(integral))
+  if (isinf(integral) or isnan(integral))
   {
+    return 0.;
+    std::cout << "cond1 = " << cond1 << "\n";
+    std::cout << "cond2 = " << cond2 << "\n";
+    std::cout << "cond3 = " << cond3 << "\n";
     std::cout << "p1\t" << p1[0] << "\t" << p1[1] << "\t" << p1[2] << "\n";
     std::cout << "p3\t" << p3[0] << "\t" << p3[1] << "\t" << p3[2] << "\n";
     std::cout << "yo?\n";

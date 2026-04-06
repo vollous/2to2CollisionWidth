@@ -5,14 +5,14 @@
 const int NDIM        = 3;
 const int NCOMP       = 1;
 const int NVEC        = 1;
-const double EPSREL   = 1e-2;
+const double EPSREL   = 5e-3;
 const double EPSABS   = 1e-12;
 const int VERBOSE     = 3;
 const int LAST        = 0;
 const int SEED        = 0;
 const int MINEVAL     = 0;
 const int MAXEVAL     = 200000000;
-const int NSTART      = 300;
+const int NSTART      = 3000;
 const int NINCREASE   = 300;
 const int NBATCH      = 300;
 const int GRIDNO      = 0;
@@ -805,9 +805,6 @@ struct gamma_M : Process
                           &result,
                           &error);
 
-    // printf("Integral = %.12f\n", result);
-    // printf("Estimated error = %.12f\n", error);
-
     gsl_integration_workspace_free(w);
     return result;
   }
@@ -1130,8 +1127,8 @@ int main()
 {
   if (std::getenv("TESTING")) testing();
 
-  /*int ncores = 5, pcores = 1e3;
-  cubacores(&ncores, &pcores);*/
+  int ncores = 5, pcores = 1e3;
+  cubacores(&ncores, &pcores);
 
   double T = 10.;
   double v = 10;
@@ -1211,10 +1208,10 @@ int main()
       T, N1 * T * T, s1, s2, s3, s4, m1, m2, m3, m4);
 
   // Gamma_M
-  int NC      = 1;
-  double fSqr = 1;
-  gamma_M GammaM(T, 1, NC, fSqr);
-  exit(0);
+  // int NC      = 1;
+  // double fSqr = 1;
+  // gamma_M GammaM(T, 1, NC, fSqr);
+  // exit(0);
   /****************************** useless *******************************/
 
   // identity proc(100, 1, 0, 0, 0, 0, 0, 0, 0, 0);
