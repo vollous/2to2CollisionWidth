@@ -466,7 +466,7 @@ double Process::ReT2(const double &g,
                      const double &mB,
                      const double &mF)
 {
-  if (abs(omega) < 1e-4) return (g, C, 1e-3, k, mB, mF);
+  if (abs(omega) < 1e-4) return ReT2(g, C, 1e-3, k, mB, mF);
   // All possible poles
   std::vector<double> poles = {
       (-omega - k) / 2., (-omega + k) / 2., (omega - k) / 2., (omega + k) / 2.};
