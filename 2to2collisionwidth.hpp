@@ -38,10 +38,10 @@ extern const int *SPIN;
 #include <numeric>
 #include <string>
 
-double _4_M_4        = 8 * M_PI * M_PI * M_PI; /* 8 pi^3 */
-double _2_PI_FACTORS = pow(2 * M_PI, 4) / pow(2 * M_PI, 3 * 3);
+const double _4_M_4        = 8 * M_PI * M_PI * M_PI; /* 8 pi^3 */
+const double _2_PI_FACTORS = pow(2 * M_PI, 4) / pow(2 * M_PI, 3 * 3);
 
-double MAX_OMEGA_PLOL_EXP = log10(2);
+const double MAX_OMEGA_PLOL_EXP = log10(2);
 using namespace boost::math::interpolators;
 
 enum class ODDNESS
