@@ -255,6 +255,7 @@ double Process::ReT1(const double &g,
                      const double &mB,
                      const double &mF)
 {
+  if (abs(omega) < 1e-4) return ReT1(g, C, 1e-3, k, mB, mF);
   // All possible poles
   std::vector<double> poles = {
       (-omega - k) / 2., (-omega + k) / 2., (omega - k) / 2., (omega + k) / 2.};
@@ -351,6 +352,12 @@ double Process::ReT1(const double &g,
   gsl_integration_workspace_free(w1);
 
   r += result1;
+
+  if (isnan(r))
+  {
+    std::cout << "Error on ReT1\t" << omega << "\t" << k << "\n";
+    exit(0);
+  }
 
   return g * g * C * r / (8. * M_PI * M_PI * k);
 }
@@ -457,6 +464,13 @@ double Process::ImT1(const double &g,
     gsl_integration_workspace_free(w2);
     r += result2;
   }
+
+  if (isnan(r))
+  {
+    std::cout << "Error on ImT1\t" << omega << "\t" << k << "\n";
+    exit(0);
+  }
+
   return g * g * C * r / (8. * M_PI * k);
 }
 double Process::ReT2(const double &g,
@@ -553,6 +567,12 @@ double Process::ReT2(const double &g,
 
   r += result1;
 
+  if (isnan(r))
+  {
+    std::cout << "Error on ReT2\t" << omega << "\t" << k << "\n";
+    exit(0);
+  }
+
   return g * g * C * r / (8. * M_PI * M_PI);
 }
 double Process::ImT2(const double &g,
@@ -597,6 +617,12 @@ double Process::ImT2(const double &g,
     return INFINITY;
   }
   gsl_integration_workspace_free(w);
+
+  if (isnan(result))
+  {
+    std::cout << "Error on ImT2\t" << omega << "\t" << k << "\n";
+    exit(0);
+  }
 
   return g * g * C / (8. * M_PI * k) * (omega * omega - k * k) * result;
 }
@@ -1059,7 +1085,6 @@ double Process::MonteCarloInt_t(const double &E1,
 
   if (isinf(integral) or isnan(integral))
   {
-    return 0.;
     std::cout << "cond1 = " << cond1 << "\n";
     std::cout << "cond2 = " << cond2 << "\n";
     std::cout << "cond3 = " << cond3 << "\n";
