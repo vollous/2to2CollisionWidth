@@ -5,7 +5,7 @@
 const int NDIM        = 3;
 const int NCOMP       = 1;
 const int NVEC        = 1;
-const double EPSREL   = 5e-3;
+const double EPSREL   = 1e-3;
 const double EPSABS   = 1e-12;
 const int VERBOSE     = 3;
 const int LAST        = 0;
@@ -952,7 +952,7 @@ void test_ReT1()
   plt::ylabel("$\\Re(T_1)$");
   plt::legend();
   plt::tight_layout();
-  plt::save("../plots/ret1.pdf");
+  plt::save("ret1.pdf");
 }
 
 void test_ImT1()
@@ -1002,7 +1002,7 @@ void test_ImT1()
   plt::ylabel("$\\Im(T_1)$");
   plt::legend();
   plt::tight_layout();
-  plt::save("../plots/imt1.pdf");
+  plt::save("imt1.pdf");
 }
 
 void test_ReT2()
@@ -1052,7 +1052,7 @@ void test_ReT2()
   plt::ylabel("$\\Re(T_2)$");
   plt::legend();
   plt::tight_layout();
-  plt::save("../plots/ret2.pdf");
+  plt::save("ret2.pdf");
 }
 
 void test_ImT2()
@@ -1102,7 +1102,7 @@ void test_ImT2()
   plt::ylabel("$\\Im(T_2)$");
   plt::legend();
   plt::tight_layout();
-  plt::save("../plots/imt2.pdf");
+  plt::save("imt2.pdf");
 }
 
 void testing()
@@ -1119,8 +1119,6 @@ void testing()
   std::cout << "\n";
   test_ImT2(); // No problem
   std::cout << "\n";
-
-  exit(0); // Exit early
 }
 
 int main()
